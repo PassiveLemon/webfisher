@@ -1,0 +1,28 @@
+{
+  "depends": [
+    {
+      "method": "fetchzip",
+      "packages": [
+        "libevdev"
+      ],
+      "path": "/nix/store/l1cq6r7mnc3afvw8cc9bc87wpsvmc3mb-source",
+      "ref": "master",
+      "rev": "5dba39fe69c1b9a73aa9b911355860ba94c4d650",
+      "sha256": "1vrf50b8b79aqd583l1g3398gqx18v3j9l2liwwz6lmkb9ydvssy",
+      "srcDir": "",
+      "url": "https://github.com/luked99/libevdev.nim/archive/5dba39fe69c1b9a73aa9b911355860ba94c4d650.tar.gz"
+    },
+    {
+      "method": "fetchzip",
+      "packages": [
+        "x11"
+      ],
+      "path": "/nix/store/8qaywzr8nzsiddjba77nhf75hzmxx0d9-source",
+      "ref": "1.2",
+      "rev": "29aca5e519ebf5d833f63a6a2769e62ec7bfb83a",
+      "sha256": "16npqgmi2qawjxaddj9ax15rfpdc7sqc37i2r5vg23lyr6znq4wc",
+      "srcDir": "",
+      "url": "https://github.com/nim-lang/x11/archive/29aca5e519ebf5d833f63a6a2769e62ec7bfb83a.tar.gz"
+    }
+  ]
+}

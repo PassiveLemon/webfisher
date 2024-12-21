@@ -1,0 +1,7 @@
+# Auto convert unless specified
+* text=auto
+
+# LF
+*.nim text eol=lf
+*.nix text eol=lf
+

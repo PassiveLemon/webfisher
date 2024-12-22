@@ -1,16 +1,25 @@
 import
-  os,
+  std/os,
+  std/strformat,
   std/json
 
-
-type configType* = object
-  castTime*: float
-  reelInterval*: float
-  reelTime*: float
-  resetTime*: float
+import
+  ./cli
 
 
-const configJson: string = """
+type
+  configType* = object
+    castTime*: float
+    reelInterval*: float
+    reelTime*: float
+    resetTime*: float
+    inputDevice*: string
+    gameMode*: string
+
+
+const
+  gameModes: seq[string] = @[ "fish", "bucket", "combo" ]
+  configJson: string = """
 {
   "castTime": 1.0,
   "reelInterval": 0.5,
@@ -20,26 +29,37 @@ const configJson: string = """
 """
 
 
-# Still need to handle the case when user is root/sudo and find the true users config dir
+proc getRealUserConfigDir(): string =
+  if (getEnv("USER") == "root") and (getEnv("SUDO_USER") != ""):
+    # Ideally we fetch the config dir for a specific user instead of assuming the location, but I couldn't find anything that does so
+    return "/home" / getEnv("SUDO_USER") / "/.config/webfisher/config.json"
+
+  return getConfigDir() / "/webfisher/config.json"
+
 proc createConfig(filePath: string): void =
   let parentPath: string = parentDir(filePath)
 
   if not existsOrCreateDir(parentPath):
-    createDir(parentPath)
+    try:
+      createDir(parentPath)
+    except IOError, OSError:
+      echo fmt"Could not create {parentPath}"
+      quit(1)
 
   if not fileExists(filePath):
-    echo "Config file does not exist. Creating..."
-    writeFile(filePath, configJson)
-
-# Debug proc
-proc readConfig*(filePath: string): string =
-  return readFile(filePath)
+    try:
+      writeFile(filePath, configJson)
+    except IOError, OSError:
+      echo fmt"Could not write to {filePath}"
+    finally:
+      echo "Config file does not exist. Creating..."
 
 # Add missing keys from the configJson const to the host config
 proc updateConfig(filePath: string): void =
   let constConfig: JsonNode = parseJson(configJson)
-  var hostConfig: JsonNode = parseFile(filePath)
-  var hostRewrite: bool
+  var
+    hostConfig: JsonNode = parseFile(filePath)
+    hostRewrite: bool
 
   for key, value in constConfig:
     if not hostConfig.contains(key):
@@ -47,31 +67,63 @@ proc updateConfig(filePath: string): void =
       hostRewrite = true
 
   if hostRewrite:
-    removeFile(filePath)
-    writeFile(filePath, pretty(hostConfig))
+    try:
+      removeFile(filePath)
+      writeFile(filePath, pretty(hostConfig))
+    except IOError, OSError:
+      echo "Could not update config file."
 
-# Return parsed json file and catch errors
-### Implement error handling
-proc parseConfig(filePath: string): configType =
-  let node: JsonNode = parseFile(filePath)
-  var json: configType
+# Check and return parsed config
+proc parseConfig(filePath: string, cliArgs: cliArgsType): configType =
+  var
+    node: JsonNode = parseFile(filePath)
+    json: configType
 
-  # doAssert node["castTime"].kind != JFloat
-  # doAssert node["reelInterval"].kind != JFloat
-  # doAssert node["reelTime"].kind != JFloat
-  # doAssert node["resetTime"].kind != JFloat
+  # We can load CLI options into the programs config without writing them to the config file
+  if cliArgs.device == "":
+    node["inputDevice"] = %"/dev/input/event0"
+  else:
+    node["inputDevice"] = %cliArgs.device
+
+  if cliArgs.mode == "":
+    echo fmt"Argument MODE not provided. Defaulting to {gameModes[0]}..."
+    node["gameMode"] = %gameModes[0]
+  else:
+    if not gameModes.contains(cliArgs.mode):
+      echo fmt"{cliArgs.mode} is not a valid argument"
+      quit(1)
+
+    node["gameMode"] = %cliArgs.mode
+
+  if node["castTime"].kind != JFloat:
+    echo "config castTime is not a float"
+    quit(1)
+  if node["reelInterval"].kind != JFloat:
+    echo "config reelInterval is not a float"
+    quit(1)
+  if node["reelTime"].kind != JFloat:
+    echo "config reelTime is not a float"
+    quit(1)
+  if node["resetTime"].kind != JFloat:
+    echo "config resetTime is not a float"
+    quit(1)
 
   try:
     json = to(node, configType)
-  # except JsonParsingError:
-  #   echo "Config file is not valid json."
-  #   quit(1)
+  except JsonParsingError:
+    echo "Config file is not valid json."
+    quit(1)
   finally:
     return json
 
-proc initConfig*(filePath: string): configType =
-  createConfig(filePath)
-  updateConfig(filePath)
+proc initConfig*(): configType =
+  let cliArgs: cliArgsType = processCliArgs()
+  var configDir: string = getRealUserConfigDir()
 
-  return parseConfig(filePath)
+  if cliArgs.file != "":
+    configDir = cliArgs.file
+    
+  createConfig(configDir)
+  updateConfig(configDir)
+  return parseConfig(configDir, cliArgs)
 

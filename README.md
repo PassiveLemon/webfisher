@@ -1,28 +1,41 @@
 # webfisher
-A Nim based fishing script Webfishing </br>
+A Nim based fishing script Webfishing
 
-3 settings:
-- Fishing: Detect when the rod comes up and then complete the game.
-  - Configurable throw length/time.
-  - Make sure to incrementally reel in the rod to increase catch rate.
-  - If it's been over a minute with no detection, LMB once (Should help recover if any weird states occur).
-- Bucketing: Periodically collect the buckets. Smart and dumb mode:
-  - Smart should use pixel detection.
-  - Dumb can just press e every 3 seconds or something.
-- Combined: Fish while periodically collecting buckets.
-
-General:
-Use pixel detections
-
-Other:
-Parse test the configJson constant
+# TODO
+- [x] Config loading
+  - [x] Find the true user (The user running with sudo)
+  - [x] Load config file
+  - [x] Create config file
+  - [x] Update config file
+  - [ ] Hot-reloading (just internally restart the program)
+- [x] CLI
+  - [x] `-h | --help` (Print out other flags)
+  - [x] `-v | --version`
+  - [x] `-f | --file` (Config file to load)
+  - [x] `-d | --device` (Device for input)
+  - [x] mode argument (fishing, bucketting, or combo)
+- [ ] Sensory
+  - [ ] Capture screen and analyze pixels (X11 wrapper)
+  - [ ] Receive/send keyboard inputs (libevdev wrapper)
+- [ ] Fishing game
+  - [ ] Casting/reeling
+  - [ ] Game detection/completion
+- [ ] Bucket game
+  - [ ]? Smart mode (Pixel detections)
+  - [ ] Dumb mode (Periodically press "e")
+- [ ] Combined game (fishing and bucketting)
+- [ ] Testing/ECC
+  - [ ] Error check config
+  - [ ] parse test constJson
+- Other goals
+  - [ ] Variable verbosity output
 
 > [!CAUTION]
-> I am not responsible for any bans or data loss as a result of using this. This was a project for me to learn Nim. If you are worried about getting banned, don't use it and be a legitimate player :) </br>
+> I am not responsible for any bans or data loss as a result of using this. This was a project for me to learn Nim. If you are worried about getting banned, don't use it and be a legitimate player :)
 
 # Dependencies
 - Linux. <b>This is not supported on Windows or MacOS.</b>
-- X11. This is not tested on Wayland so I cannot ensure compatibility.
+- X11. This is not supported on Wayland.
 - Sudo. This requires access to input devices.
 - Nim packages: `libevdev, x11`
 

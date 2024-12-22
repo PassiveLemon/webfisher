@@ -1,5 +1,5 @@
-import
-  os
+# import
+#   std/os
 
 import
   webfisher / [
@@ -11,10 +11,8 @@ import
 #   x11/xlib,
 #   libevdev
 
-let
-  # Config file should be overridable from CLI. Don't forget CLI --help
-  configFilePath: string = getConfigDir() / "/webfisher/config.json"
-
 
 block webfisher:
-  let config: configType = initConfig(configFilePath)
+  let config: configType = initConfig()
+  echo config
+

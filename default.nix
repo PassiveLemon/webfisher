@@ -1,5 +1,6 @@
 { lib
 , buildNimPackage
+, xorg
 }:
 buildNimPackage (finalAttrs: {
   pname = "webfisher";
@@ -11,7 +12,9 @@ buildNimPackage (finalAttrs: {
 
   lockFile = ./lock.json;
 
-  buildInputs = [ ];
+  buildInputs = [
+    xorg.libXext
+  ];
 
   meta = with lib; {
     description = "A Nim based fishing script for Webfishing";

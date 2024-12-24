@@ -8,7 +8,7 @@ import
 
 
 type
-  cliArgsType* = object
+  CliArgs* = object
     file*: string
     device*: string
     mode*: string
@@ -33,8 +33,8 @@ proc cliVersion(): void =
   echo fmt"Webfisher {releaseVersion}"
   quit(0)
 
-proc processCliArgs*(): cliArgsType =
-  var cliArgs: cliArgsType
+proc processCliArgs*(): CliArgs =
+  var cliArgs: CliArgs
 
   for kind, key, val in getopt():
     case kind

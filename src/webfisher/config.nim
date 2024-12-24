@@ -8,8 +8,9 @@ import
 
 
 type
-  configType* = object
+  Config* = object
     castTime*: float
+    checkInterval*: float
     reelInterval*: float
     reelTime*: float
     resetTime*: float
@@ -22,6 +23,7 @@ const
   configJson: string = """
 {
   "castTime": 1.0,
+  "checkInterval": 0.5,
   "reelInterval": 0.5,
   "reelTime": 0.3,
   "resetTime": 60.0
@@ -74,10 +76,10 @@ proc updateConfig(filePath: string): void =
       echo "Could not update config file."
 
 # Check and return parsed config
-proc parseConfig(filePath: string, cliArgs: cliArgsType): configType =
+proc parseConfig(filePath: string, cliArgs: CliArgs): Config =
   var
     node: JsonNode = parseFile(filePath)
-    json: configType
+    json: Config
 
   # We can load CLI options into the programs config without writing them to the config file
   if cliArgs.device == "":
@@ -98,6 +100,9 @@ proc parseConfig(filePath: string, cliArgs: cliArgsType): configType =
   if node["castTime"].kind != JFloat:
     echo "config castTime is not a float"
     quit(1)
+  if node["checkInterval"].kind != JFloat:
+    echo "config castTime is not a float"
+    quit(1)
   if node["reelInterval"].kind != JFloat:
     echo "config reelInterval is not a float"
     quit(1)
@@ -109,15 +114,15 @@ proc parseConfig(filePath: string, cliArgs: cliArgsType): configType =
     quit(1)
 
   try:
-    json = to(node, configType)
+    json = to(node, Config)
   except JsonParsingError:
     echo "Config file is not valid json."
     quit(1)
   finally:
     return json
 
-proc initConfig*(): configType =
-  let cliArgs: cliArgsType = processCliArgs()
+proc initConfig*(): Config =
+  let cliArgs: CliArgs = processCliArgs()
   var configDir: string = getRealUserConfigDir()
 
   if cliArgs.file != "":

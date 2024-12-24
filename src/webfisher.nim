@@ -1,18 +1,37 @@
-# import
-#   std/os
+import
+  std/os
 
 import
   webfisher / [
     config,
-    functions
+    pixel
   ]
 
-# import
-#   x11/xlib,
-#   libevdev
+import
+  x11/xlib
 
+
+type
+  GlobalState* = object
+    fishingGameActive: bool
+    bucketGameActive: bool
+    comboGameActive: bool
+
+var globalState*: GlobalState
 
 block webfisher:
-  let config: configType = initConfig()
+  let
+    config: Config = initConfig()
+    display: PDisplay = XOpenDisplay(nil)
+
   echo config
+  echo "Config loaded."
+
+  while true:
+    echo "Simulated main loop"
+    if getFishingGame(display):
+      echo "Fishing game found"
+    sleep((config.checkInterval * 1000).int)
+
+  discard XCloseDisplay(display)
 

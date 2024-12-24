@@ -13,7 +13,7 @@ A Nim based fishing script Webfishing
   - [x] `-v | --version`
   - [x] `-f | --file` (Config file to load)
   - [x] `-d | --device` (Device for input)
-  - [x] mode argument (fishing, bucketting, or combo)
+  - [x] mode argument (fish, bucket, or combo)
 - [ ] Sensory
   - [ ] Capture screen and analyze pixels (X11 wrapper)
   - [ ] Receive/send keyboard inputs (libevdev wrapper)

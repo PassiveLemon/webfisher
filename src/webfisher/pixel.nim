@@ -15,21 +15,22 @@ type
   PixelList = seq[tuple[x, y, r, g, b: int]]
 
 
-const# 428, 745
+const
   fishingGamePixels: PixelList = @[(428, 785, 156, 145, 74), (388, 745, 156, 145, 74), (428, 705, 156, 145, 74), (468, 745, 156, 145, 74)]
 
 
 # saveToPPM: https://github.com/nim-lang/x11/blob/29aca5e519ebf5d833f63a6a2769e62ec7bfb83a/examples/xshmex.nim#L40
-proc saveToPPM(image: PXImage, filePath: string) =
-  var f = open(filePath, fmWrite)
-  defer: f.close
-  writeLine(f, "P6")
-  writeLine(f, image.width, " ", image.height)
-  writeLine(f, 255)
-  for i in 0..<(image.width * image.height):
-    f.write(image.data[i * 4 + 2])
-    f.write(image.data[i * 4 + 1])
-    f.write(image.data[i * 4 + 0])
+# Only here for testing
+# proc saveToPPM(image: PXImage, filePath: string) =
+#   var f = open(filePath, fmWrite)
+#   defer: f.close
+#   writeLine(f, "P6")
+#   writeLine(f, image.width, " ", image.height)
+#   writeLine(f, 255)
+#   for i in 0..<(image.width * image.height):
+#     f.write(image.data[i * 4 + 2])
+#     f.write(image.data[i * 4 + 1])
+#     f.write(image.data[i * 4 + 0])
 
 proc getScreenshot(display: PDisplay): PXImage =
   return XGetImage(display, RootWindow(display, DefaultScreen(display)), 1920, 0, 1920, 1080, AllPlanes, ZPixmap)
@@ -53,8 +54,6 @@ proc getFishingGame*(display: PDisplay): bool =
   # screenshot.saveToPPM("./screenshot.ppm")
   for gamePixel in fishingGamePixels:
     let pixel: Pixel = getPixelColor(display, screenshot, gamePixel.x, gamePixel.y)
-    #echo pixel
-    #echo gamePixel
     if
       pixel.r == gamePixel.r and
       pixel.g == gamePixel.g and

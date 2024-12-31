@@ -15,15 +15,15 @@ A Nim based fishing script Webfishing
   - [x] `-d | --device` (Device for input)
   - [x] mode argument (fish, bucket, or combo)
 - [ ] Sensory
-  - [ ] Capture screen and analyze pixels (X11 wrapper)
+  - [x] Capture screen and analyze pixels (X11 wrapper)
   - [ ] Receive/send keyboard inputs (libevdev wrapper)
 - [ ] Fishing game
   - [ ] Casting/reeling
-  - [ ] Game detection/completion
+  - [x] Game detection
+  - [ ] Game completion
 - [ ] Bucket game
-  - [ ]? Smart mode (Pixel detections)
   - [ ] Dumb mode (Periodically press "e")
-- [ ] Combined game (fishing and bucketting)
+- [ ] Combined game (fishing and bucket)
 - [ ] Testing/ECC
   - [ ] Error check config
   - [ ] parse test constJson

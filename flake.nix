@@ -22,7 +22,8 @@
       devShells = {
         default = pkgs.mkShell {
           packages = with pkgs; [
-            nim nim_lk jq
+            nim
+            nim_lk jq
           ];
           packagesFrom = [
             self'.packages.default.nativeBuildInputs
@@ -34,7 +35,8 @@
         };
       };
       packages = {
-        default = pkgs.callPackage ./default.nix { };
+        default = self'.packages.webfisher;
+        webfisher = pkgs.callPackage ./default.nix { };
       };
     };
   };

@@ -1,10 +1,11 @@
 { lib
 , buildNimPackage
+, libevdev
 , xorg
 }:
 buildNimPackage (finalAttrs: {
   pname = "webfisher";
-  version = "0.1.0";
+  version = "0.2.0";
 
   src = ./.;
 
@@ -13,6 +14,7 @@ buildNimPackage (finalAttrs: {
   lockFile = ./lock.json;
 
   buildInputs = [
+    libevdev
     xorg.libXext
   ];
 

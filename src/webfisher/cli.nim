@@ -1,7 +1,9 @@
 import
-  std/os,
-  std/strformat,
-  std/parseopt
+  std / [
+    os,
+    strformat,
+    parseopt
+  ]
 
 import
   ./meta
@@ -10,9 +12,7 @@ import
 type
   CliArgs* = object
     file*: string
-    device*: string
     mode*: string
-
 
 proc cliHelp(): void =
   echo """
@@ -25,7 +25,6 @@ Options:
   -h, --help                  Show help and exit
   -v, --version               Show version and exit
   -f=FILE, --file=FILE        Location of the configuration file
-  -d=DEVICE, --device=DEVICE  Input device to use
 """
   quit(0)
 
@@ -48,8 +47,6 @@ proc processCliArgs*(): CliArgs =
             cliVersion()
           of "f", "file":
             cliArgs.file = expandTilde(val)
-          of "d", "device":
-            cliArgs.device = val
       of cmdEnd: assert(false)
   return cliArgs
 

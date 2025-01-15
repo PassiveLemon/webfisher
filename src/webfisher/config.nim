@@ -1,20 +1,18 @@
 import
-  std/os,
-  std/strformat,
-  std/json
+  std / [
+    os,
+    strformat,
+    json
+  ]
 
 import
   ./cli
 
-
 type
   Config* = object
+    castOnStart*: bool
     castTime*: float
     checkInterval*: float
-    reelInterval*: float
-    reelTime*: float
-    resetTime*: float
-    inputDevice*: string
     gameMode*: string
 
 
@@ -22,11 +20,9 @@ const
   gameModes: seq[string] = @[ "fish", "bucket", "combo" ]
   configJson: string = """
 {
+  "castOnStart": false,
   "castTime": 1.0,
   "checkInterval": 0.5,
-  "reelInterval": 0.5,
-  "reelTime": 0.3,
-  "resetTime": 60.0
 }
 """
 
@@ -39,7 +35,7 @@ proc getRealUserConfigDir(): string =
   return getConfigDir() / "/webfisher/config.json"
 
 proc createConfig(filePath: string): void =
-  let parentPath: string = parentDir(filePath)
+  let parentPath = parentDir(filePath)
 
   if not existsOrCreateDir(parentPath):
     try:
@@ -58,9 +54,9 @@ proc createConfig(filePath: string): void =
 
 # Add missing keys from the configJson const to the host config
 proc updateConfig(filePath: string): void =
-  let constConfig: JsonNode = parseJson(configJson)
+  let constConfig = parseJson(configJson)
   var
-    hostConfig: JsonNode = parseFile(filePath)
+    hostConfig = parseFile(filePath)
     hostRewrite: bool
 
   for key, value in constConfig:
@@ -76,41 +72,30 @@ proc updateConfig(filePath: string): void =
       echo "Could not update config file."
 
 # Check and return parsed config
-proc parseConfig(filePath: string, cliArgs: CliArgs): Config =
+proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
   var
-    node: JsonNode = parseFile(filePath)
+    node = parseFile(filePath)
     json: Config
 
   # We can load CLI options into the programs config without writing them to the config file
-  if cliArgs.device == "":
-    node["inputDevice"] = %"/dev/input/event0"
-  else:
-    node["inputDevice"] = %cliArgs.device
-
   if cliArgs.mode == "":
     echo fmt"Argument MODE not provided. Defaulting to {gameModes[0]}..."
     node["gameMode"] = %gameModes[0]
   else:
     if not gameModes.contains(cliArgs.mode):
-      echo fmt"{cliArgs.mode} is not a valid argument"
+      echo fmt"{cliArgs.mode} is not a valid argument."
       quit(1)
 
     node["gameMode"] = %cliArgs.mode
 
+  if node["castOnStart"].kind != JBool:
+    echo "config castOnStart is not a boolean."
+    quit(1)
   if node["castTime"].kind != JFloat:
-    echo "config castTime is not a float"
+    echo "config castTime is not a float."
     quit(1)
   if node["checkInterval"].kind != JFloat:
-    echo "config castTime is not a float"
-    quit(1)
-  if node["reelInterval"].kind != JFloat:
-    echo "config reelInterval is not a float"
-    quit(1)
-  if node["reelTime"].kind != JFloat:
-    echo "config reelTime is not a float"
-    quit(1)
-  if node["resetTime"].kind != JFloat:
-    echo "config resetTime is not a float"
+    echo "config castTime is not a float."
     quit(1)
 
   try:
@@ -122,8 +107,8 @@ proc parseConfig(filePath: string, cliArgs: CliArgs): Config =
     return json
 
 proc initConfig*(): Config =
-  let cliArgs: CliArgs = processCliArgs()
-  var configDir: string = getRealUserConfigDir()
+  let cliArgs = processCliArgs()
+  var configDir = getRealUserConfigDir()
 
   if cliArgs.file != "":
     configDir = cliArgs.file

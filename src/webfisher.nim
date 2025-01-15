@@ -1,37 +1,70 @@
 import
-  std/os
+  std / [
+    os,
+    times
+  ]
 
 import
   webfisher / [
     config,
-    pixel
+    evdev,
+    screen,
+    task,
   ]
-
-import
-  x11/xlib
 
 
 type
   GlobalState* = object
-    fishingGameActive: bool
-    bucketGameActive: bool
-    comboGameActive: bool
+    lineCast: bool
+    bucketTime: float
+    # sodaTime: float
+    # shopCount: int
 
-var globalState*: GlobalState
+
+var globalState*: GlobalState = GlobalState(
+  lineCast: true,
+  bucketTime: epochTime(),
+  # sodaTime: epochTime(),
+  # shopCount: 0
+)
+  
 
 block webfisher:
-  let
-    config: Config = initConfig()
-    display: PDisplay = XOpenDisplay(nil)
-
-  echo config
-  echo "Config loaded."
+  let config = initConfig()
+  if config.castOnStart == true:
+    globalState.lineCast = false
+  initDisplay()
+  initDevice()
 
   while true:
-    echo "Simulated main loop"
-    if getFishingGame(display):
-      echo "Fishing game found"
     sleep((config.checkInterval * 1000).int)
+    if (config.gameMode == "fish" or config.gameMode == "combo") and getFishingGame():
+      echo "Doing fishing task"
+      doFish()
+      sleep(3000)
+      if getCatchMenu():
+        echo "Clicking through menu"
+        clickCatchMenu()
+      else:
+        echo "No catch detected"
+      globalState.lineCast = false
+      sleep(1000)
 
-  discard XCloseDisplay(display)
+    if (config.gameMode == "bucket" or config.gameMode == "combo") and ((epochTime() - globalState.bucketTime) > 30) and globalState.lineCast == false:
+      echo "Doing bucket task"
+      doBucket()
+      sleep(1000)
+      if getCatchMenu():
+        echo "Clicking through menu"
+        clickCatchMenu()
+      else:
+        echo "No catch detected"
+      globalState.bucketTime = epochTime()
+      sleep(1000)
+
+    if globalState.lineCast == false:
+      sleep(1000)
+      echo "Casting line"
+      castLine(config.castTime)
+      globalState.lineCast = true
 

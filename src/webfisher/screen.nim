@@ -43,7 +43,6 @@ proc getScreenshot(): PXImage =
 
 proc getPixelColor(screenshot: PXImage; x: int; y: int): Pixel =
   var pixel: Pixel
-
   pixel.color = XGetPixel(screenshot, x.cint, y.cint)
   pixel.r = ((pixel.color shr 16) and 0xFF).int
   pixel.g = ((pixel.color shr 8) and 0xFF).int
@@ -61,6 +60,7 @@ proc getFishingGame*(): bool =
         pixel.b == reelPixel.b:
       # We test if at least 3 of the pixels match since the reel could block the pixel
       valid += 1
+  discard XDestroyImage(screenshot)
   if valid >= 3:
     return true
   else:
@@ -76,6 +76,7 @@ proc getCatchMenu*(): bool =
         pixel.g == menuPixel.g and
         pixel.b == menuPixel.b:
       valid += 1
+  discard XDestroyImage(screenshot)
   if valid >= 3:
     return true
   else:

@@ -24,9 +24,11 @@ In order to use this script, you must enable the built-in autoclicker in the Web
 # Configuration (config.json)
 | Setting | Default | Details |
 | :- | :- | :- |
-| castOnStart | `false` (Boolean) | Whether to cast the rod upon starting the script. When set to `false`, this will not do anything until the rod is cast and the fishing task is detected. |
-| castTime | `1.0` (Float) | How long to cast the rod (in seconds). |
-| checkInterval | `0.25` (Float) | How often to check for visual input (in seconds). |
+| bucketTime | `30.0` (Float) | How long (in seconds) to wait between bucket task attempts. |
+| castOnStart | `false` (Boolean) | Whether to cast the rod upon starting the script. When set to `false`, no happens until the first fishing task is detected. |
+| castTime | `1.0` (Float) | How long (in seconds) to cast the rod. |
+| checkInterval | `0.25` (Float) | How often (in seconds) to check for visual input. |
+| resetTime | `120.0` (Float) | How long (in seconds) since the last catch to wait before attempting to reset. This helps resynchronize the loop if something is missed. |
 
 # TODO
 - [ ] Timestamps

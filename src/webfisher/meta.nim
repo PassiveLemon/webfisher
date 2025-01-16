@@ -1,3 +1,3 @@
 let
-  releaseVersion* = "0.2.1"
+  releaseVersion* = "0.3.0"
 

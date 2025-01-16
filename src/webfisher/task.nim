@@ -7,12 +7,15 @@ import
 
 
 proc cleanup() {.noconv.} =
-  echo "Cleaning up"
+  echo "Cleaning up..."
   cleanupDisplay()
   cleanupDevice()
   quit(0)
 
 setControlCHook(cleanup)
+
+proc resetClick*(): void =
+  pressMouse(20)
 
 proc castLine*(castTime: float): void =
   pressMouse(castTime * 1000)

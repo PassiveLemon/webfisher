@@ -10,19 +10,23 @@ import
 
 type
   Config* = object
+    bucketTime*: float
     castOnStart*: bool
     castTime*: float
     checkInterval*: float
     gameMode*: string
+    resetTime*: float
 
 
 const
   gameModes: seq[string] = @[ "fish", "bucket", "combo" ]
   configJson: string = """
 {
+  "bucketTime": 30.0,
   "castOnStart": false,
   "castTime": 1.0,
   "checkInterval": 0.5,
+  "resetTime": 120.0
 }
 """
 
@@ -88,6 +92,9 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
 
     node["gameMode"] = %cliArgs.mode
 
+  if node["bucketTime"].kind != JFloat:
+    echo "config bucketTime is not a float."
+    quit(1)
   if node["castOnStart"].kind != JBool:
     echo "config castOnStart is not a boolean."
     quit(1)
@@ -96,6 +103,9 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
     quit(1)
   if node["checkInterval"].kind != JFloat:
     echo "config castTime is not a float."
+    quit(1)
+  if node["resetTime"].kind != JFloat:
+    echo "config resetTime is not a float."
     quit(1)
 
   try:

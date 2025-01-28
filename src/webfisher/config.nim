@@ -110,9 +110,14 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
   if node["castTime"].kind != JFloat:
     echo "config castTime is not a float."
     quit(1)
+  # Convert seconds to ms at config time
+  node["castTime"] = %(node["castTime"].getFloat() * 1000)
+
   if node["checkInterval"].kind != JFloat:
     echo "config castTime is not a float."
     quit(1)
+  node["checkInterval"] = %(node["checkInterval"].getFloat() * 1000)
+
   if node["holdToFish"].kind != JBool:
     echo "config holdToFish is not a boolean."
     quit(1)

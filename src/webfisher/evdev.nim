@@ -30,7 +30,7 @@ proc createDevice(): ptr libevdev_uinput =
 
   let libevdevUinputRet = libevdev_uinput_create_from_device(evdev, LIBEVDEV_UINPUT_OPEN_MANAGED, addr uinput)
   if libevdevUinputRet < 0:
-    echo fmt"Could not create libevdev uinput mouse device: code {libevdevUinputRet}"
+    echo fmt"Could not create libevdev uinput device: code {libevdevUinputRet}"
     quit(1)
 
   return uinput

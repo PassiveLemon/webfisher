@@ -16,7 +16,7 @@ type
     r*, g*, b*: int
 
 
-var display: PDisplay
+var webfisherDisplay: PDisplay
 
 
 # saveToPPM: https://github.com/nim-lang/x11/blob/29aca5e519ebf5d833f63a6a2769e62ec7bfb83a/examples/xshmex.nim#L40
@@ -33,10 +33,10 @@ var display: PDisplay
 #     f.write(image.data[i * 4 + 0])
 
 proc initDisplay*(): void =
-  display = XOpenDisplay(nil)
+  webfisherDisplay = XOpenDisplay(nil)
 
 proc cleanupDisplay*(): void =
-  discard XCloseDisplay(display)
+  discard XCloseDisplay(webfisherDisplay)
 
 proc getScreenshot(): PXImage =
   var screenshot = XGetImage(webfisherDisplay,

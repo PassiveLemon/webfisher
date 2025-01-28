@@ -8,6 +8,7 @@ import
 import
   ./cli
 
+
 type
   Config* = object
     bucketTime*: float
@@ -104,9 +105,11 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
   if node["bucketTime"].kind != JFloat:
     echo "config bucketTime is not a float."
     quit(1)
+
   if node["castOnStart"].kind != JBool:
     echo "config castOnStart is not a boolean."
     quit(1)
+  
   if node["castTime"].kind != JFloat:
     echo "config castTime is not a float."
     quit(1)

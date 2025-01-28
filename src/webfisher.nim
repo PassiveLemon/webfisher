@@ -23,14 +23,14 @@ type
     # shopCount: int
 
 
-var globalState*: GlobalState = GlobalState(
+var globalState: GlobalState = GlobalState(
   lineCast: true,
   bucketTime: epochTime(),
   resetTime: epochTime(),
   # sodaTime: epochTime(),
   # shopCount: 0
 )
-  
+
 
 block webfisher:
   initConfig()
@@ -51,7 +51,6 @@ block webfisher:
       doCatchMenu()
       globalState.lineCast = false
       globalState.resetTime = epochTime()
-      sleep(1000)
 
     if (globalConfig.gameMode in ["combo", "bucket"]) and ((epochTime() - globalState.bucketTime) > globalConfig.bucketTime) and (globalState.lineCast == false):
       echo "Doing bucket task..."
@@ -59,10 +58,9 @@ block webfisher:
       sleep(1500)
       doCatchMenu()
       globalState.bucketTime = epochTime()
-      sleep(1000)
 
     if globalState.lineCast == false:
-      sleep(1000)
+      sleep(500)
       echo "Casting line..."
       castLine()
       globalState.lineCast = true
@@ -70,5 +68,6 @@ block webfisher:
     if ((epochTime() - globalState.resetTime)) > globalConfig.resetTime:
       echo "Attempting reset..."
       resetClick()
+      globalState.lineCast = false
       globalState.resetTime = epochTime()
 

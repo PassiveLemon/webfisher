@@ -14,6 +14,7 @@ type
     file*: string
     mode*: string
 
+
 proc cliHelp(): void =
   echo """
 Usage: webfisher [Options] [MODE]

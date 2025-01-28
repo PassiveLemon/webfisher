@@ -7,6 +7,8 @@ import
 
 import ./pixel
 
+from ./config import globalConfig
+
 
 type
   Pixel* = object
@@ -37,7 +39,13 @@ proc cleanupDisplay*(): void =
   discard XCloseDisplay(display)
 
 proc getScreenshot(): PXImage =
-  var screenshot = XGetImage(display, RootWindow(display, DefaultScreen(display)), 1920, 0, 1920, 1080, AllPlanes, ZPixmap)
+  var screenshot = XGetImage(webfisherDisplay,
+                            RootWindow(webfisherDisplay, DefaultScreen(webfisherDisplay)),
+                            globalConfig.screenConfig[0].cint,
+                            globalConfig.screenConfig[1].cint,
+                            globalConfig.screenConfig[2].cuint,
+                            globalConfig.screenConfig[3].cuint,
+                            AllPlanes, ZPixmap)
   # screenshot.saveToPPM("./screenshot.ppm")
   return screenshot
 

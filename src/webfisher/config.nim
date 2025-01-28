@@ -15,7 +15,9 @@ type
     castTime*: float
     checkInterval*: float
     gameMode*: string
+    holdToFish*: bool
     resetTime*: float
+    screenConfig*: seq[int]
 
 
 const
@@ -26,9 +28,16 @@ const
   "castOnStart": false,
   "castTime": 1.0,
   "checkInterval": 0.5,
-  "resetTime": 120.0
+  "holdToFish": false,
+  "resetTime": 120.0,
+  "screenConfig": [
+    0, 0, 1920, 1080
+  ]
 }
 """
+
+
+var globalConfig*: Config
 
 
 proc getRealUserConfigDir(): string =
@@ -104,9 +113,25 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
   if node["checkInterval"].kind != JFloat:
     echo "config castTime is not a float."
     quit(1)
+  if node["holdToFish"].kind != JBool:
+    echo "config holdToFish is not a boolean."
+    quit(1)
+  
   if node["resetTime"].kind != JFloat:
     echo "config resetTime is not a float."
     quit(1)
+
+  if node["screenConfig"].kind != JArray:
+    echo "config screenConfig is not a list."
+    quit(1)
+  for v in 0..3:
+    try:
+      if node["screenConfig"][v].kind != JInt:
+        echo fmt"config screenConfig element {v + 1} is not an integer."
+        quit(1)
+    except IndexDefect:
+      echo fmt"config screenConfig is missing a value."
+      quit(1)
 
   try:
     json = to(node, Config)
@@ -116,7 +141,7 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
   finally:
     return json
 
-proc initConfig*(): Config =
+proc initConfig*(): void =
   let cliArgs = processCliArgs()
   var configDir = getRealUserConfigDir()
 
@@ -125,5 +150,8 @@ proc initConfig*(): Config =
     
   createConfig(configDir)
   updateConfig(configDir)
-  return parseConfig(configDir, cliArgs)
+  globalConfig = parseConfig(configDir, cliArgs)
+
+proc getConfig*(): Config =
+  return globalConfig
 

@@ -5,6 +5,8 @@ import
   ./evdev,
   ./screen
 
+from ./config import globalConfig
+
 
 proc cleanup() {.noconv.} =
   echo "Cleaning up..."
@@ -14,23 +16,31 @@ proc cleanup() {.noconv.} =
 
 setControlCHook(cleanup)
 
-proc resetClick*(): void =
-  pressMouse(20)
+proc doCatchMenu*(): void =
+  if getCatchMenu():
+    echo "Nice catch!"
+    while getCatchMenu():
+      pressMouse(20)
+      sleep(500)
+  else:
+    echo "No catch detected."
 
-proc castLine*(castTime: float): void =
-  pressMouse(castTime * 1000)
+proc castLine*(): void =
+  pressMouse(globalConfig.castTime)
 
 proc doFish*(): void =
-  while getFishingGame():
-    pressMouse()
-    sleep(500)
-  releaseMouse()
+  if globalConfig.holdToFish:
+    while getFishingGame():
+      pressMouse()
+      sleep(500)
+    releaseMouse()
+  else:
+    while getFishingGame():
+      pressMouse(20)
 
 proc doBucket*(): void =
   pressKey(20)
 
-proc clickCatchMenu*(): void =
-  pressMouse(20)
-  sleep(1000)
+proc resetClick*(): void =
   pressMouse(20)
 

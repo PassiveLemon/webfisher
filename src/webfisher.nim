@@ -33,49 +33,41 @@ var globalState*: GlobalState = GlobalState(
   
 
 block webfisher:
-  let config = initConfig()
-  if config.castOnStart == true:
-    globalState.lineCast = false
+  initConfig()
   initDisplay()
   initDevice()
 
-  echo fmt"Started in {config.gameMode} mode."
+  if globalConfig.castOnStart == true:
+    globalState.lineCast = false
+
+  echo fmt"Started in {globalConfig.gameMode} mode."
 
   while true:
-    sleep((config.checkInterval * 1000).int)
-    if (config.gameMode in ["combo", "fish"]) and getFishingGame():
+    sleep((globalConfig.checkInterval).int)
+    if (globalConfig.gameMode in ["combo", "fish"]) and getFishingGame():
       echo "Doing fishing task..."
       doFish()
-      sleep(3000)
-      if getCatchMenu():
-        echo "Nice catch!"
-        clickCatchMenu()
-      else:
-        echo "No catch detected."
+      sleep(2500)
+      doCatchMenu()
       globalState.lineCast = false
       globalState.resetTime = epochTime()
       sleep(1000)
 
-    if (config.gameMode in ["combo", "bucket"]) and ((epochTime() - globalState.bucketTime) > config.bucketTime) and (globalState.lineCast == false):
+    if (globalConfig.gameMode in ["combo", "bucket"]) and ((epochTime() - globalState.bucketTime) > globalConfig.bucketTime) and (globalState.lineCast == false):
       echo "Doing bucket task..."
       doBucket()
-      sleep(2000)
-      if getCatchMenu():
-        echo "Nice catch!"
-        clickCatchMenu()
-      else:
-        echo "No catch detected."
+      sleep(1500)
+      doCatchMenu()
       globalState.bucketTime = epochTime()
       sleep(1000)
 
     if globalState.lineCast == false:
       sleep(1000)
       echo "Casting line..."
-      castLine(config.castTime)
+      castLine()
       globalState.lineCast = true
 
-    # If the time since the last catch exceeds 2 minutes, we click just once. This action should help resynchronize the loop if something is missed.
-    if (epochTime() - globalState.resetTime) > config.resetTime:
+    if ((epochTime() - globalState.resetTime)) > globalConfig.resetTime:
       echo "Attempting reset..."
       resetClick()
       globalState.resetTime = epochTime()

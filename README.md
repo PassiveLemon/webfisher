@@ -19,7 +19,8 @@ A Nim based fishing script for Webfishing
 - Edit the generated config file in your `~/.config/webfisher/config.json`. You can also supply a config file with `-f <path to config.json`.
   - Arguments can be found by tacking `-h` or `--help`
 
-In order to use this script, you must enable the built-in autoclicker in the Webfishing main settings.
+> [!IMPORTANT]
+> In order to use the bucket functionality, your interact key must be `E` (default).
 
 # Configuration (config.json)
 | Setting | Default | Details |
@@ -28,7 +29,9 @@ In order to use this script, you must enable the built-in autoclicker in the Web
 | castOnStart | `false` (Boolean) | Whether to cast the rod upon starting the script. When set to `false`, no happens until the first fishing task is detected. |
 | castTime | `1.0` (Float) | How long (in seconds) to cast the rod. |
 | checkInterval | `0.25` (Float) | How often (in seconds) to check for visual input. |
+| holdToFish | `false` (Boolean) | Whether to hold to fish by using the built-in autoclicker (Make sure to enable this before setting to `true`). When set to `false`, it will rapidly click until completed. |
 | resetTime | `120.0` (Float) | How long (in seconds) since the last catch to wait before attempting to reset. This helps resynchronize the loop if something is missed. |
+| screenConfig | `[ 0, 0, 1920, 1080 ]` (List of 4 integers) | Config to control the screen capture. This spans across all displays. The first 2 elements are the starting X and Y value of the screen. The last 2 elements are the width and height of the screen. For example: If you have 2 side-by-side 1080p displays and you launch the game on the right, your config would be `[ 1920, 0, 1920, 1080 ]`. |
 
 # TODO
 - [ ] Timestamps

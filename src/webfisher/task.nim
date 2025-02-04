@@ -41,6 +41,3 @@ proc doFish*(): void =
 proc doBucket*(): void =
   pressKey(20)
 
-proc resetClick*(): void =
-  pressMouse(20)
-

@@ -67,7 +67,6 @@ block webfisher:
 
     if ((epochTime() - globalState.resetTime)) > globalConfig.resetTime:
       echo "Attempting reset..."
-      resetClick()
       globalState.lineCast = false
       globalState.resetTime = epochTime()
 

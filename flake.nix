@@ -22,7 +22,7 @@
       devShells = {
         default = pkgs.mkShell {
           packages = with pkgs; [
-            nim
+            nim nimlsp nimble
             nim_lk jq
           ];
           packagesFrom = [
@@ -31,6 +31,8 @@
           ];
           shellHook = ''
             nim_lk | jq --sort-keys > lock.json
+            nimble install -d > /dev/null &
+            alias editor="lite-xl &"
           '';
         };
       };

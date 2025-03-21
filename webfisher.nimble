@@ -8,6 +8,6 @@ bin = @["webfisher"]
 
 # Dependencies
 requires "nim >= 2.2.0"
-# requires "libevdev >= 0.1.0"
+requires "https://github.com/PassiveLemon/libevdev-nim.git#c509da320c45b3b77c2da2d45e695511ff457ba0" # Libevdev
 requires "x11 >= 1.2"
 

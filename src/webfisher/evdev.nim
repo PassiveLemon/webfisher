@@ -5,8 +5,8 @@ import
   ]
 
 import
-  ./libevdev/libevdev, # Upstream does not have any uinput procs so currently using a fork
-  ./libevdev/linuxinput
+  libevdev,
+  linux/input
 
 
 var webfisherDevice: ptr libevdev_uinput

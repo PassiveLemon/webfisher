@@ -8,7 +8,7 @@ A Nim based fishing script for Webfishing
 - Linux. <b>This is not supported on Windows or MacOS.</b>
 - X11. This is not supported on Wayland.
 - A user in the "input" group or sudo privileges.
-- Nimble packages: `x11`
+- Nimble packages: `x11` and [`libevdev`](https://github.com/PassiveLemon/libevdev-nim)
 
 # Usage
 ### Nix:
@@ -37,10 +37,9 @@ A Nim based fishing script for Webfishing
 | screenConfig | `[ 0, 0, 1920, 1080 ]` (List of 4 integers) | Config to control the screen capture. This spans across all displays. The first 2 elements are the starting X and Y value of the screen. The last 2 elements are the width and height of the screen. For example: If you have 2 side-by-side 1080p displays and you launch the game on the right, your config would be `[ 1920, 0, 1920, 1080 ]`. |
 
 # TODO
-- [ ] Move libevdev to its own repository
-- [ ] Timestamps
-- [ ] Verbose and quiet output
-- [ ] parse test constJson
-- [ ] Periodic sodas (Player config for slot) - Do not soda unless a fish has recently been caught so we dont waste sodas on nothing.
-- [ ] Auto shop (Needs cursor movement)
+- Periodic sodas (Player config for slot) - Do not soda unless a fish has recently been caught so we dont waste sodas on nothing.
+- Auto shop (Needs cursor movement)
+- Timestamps
+- Verbose and quiet output
+- parse test constJson
 

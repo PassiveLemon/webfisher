@@ -1,5 +1,5 @@
 # Package
-version = "0.5.0"
+version = "1.0.0"
 author = "PassiveLemon"
 description = "A Nim based fishing script for Webfishing"
 license = "GPL-3.0-only"

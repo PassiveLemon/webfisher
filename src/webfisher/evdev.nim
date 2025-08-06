@@ -8,13 +8,12 @@ import
     xlib
   ]
 
+import ./constants
+
 import
   libevdev,
   linux/input
 
-
-type
-  CursorPos* = tuple[x, y: int]
 
 
 var
@@ -27,8 +26,6 @@ proc createDevice(): ptr libevdev_uinput =
     evdev = libevdev_new()
     uinput: ptr libevdev_uinput
 
-  webfisherDisplay = XOpenDisplay(nil)
-
   libevdev_set_name(evdev, "Webfisher Input");
   discard libevdev_enable_property(evdev, INPUT_PROP_POINTER);
 
@@ -39,6 +36,7 @@ proc createDevice(): ptr libevdev_uinput =
   discard libevdev_enable_event_type(evdev, EV_KEY);
   discard libevdev_enable_event_code(evdev, EV_KEY, BTN_LEFT, nil);
   discard libevdev_enable_event_code(evdev, EV_KEY, KEY_E, nil);
+  discard libevdev_enable_event_code(evdev, EV_KEY, KEY_B, nil);
 
   # The const for KEY_num is the number + 1. Ex: KEY_1 = 2
   for keyCode in 2..11:
@@ -53,6 +51,7 @@ proc createDevice(): ptr libevdev_uinput =
 
 proc initDevice*(): void =
   webfisherDevice = createDevice()
+  webfisherDisplay = XOpenDisplay(nil)
 
 proc cleanupDevice*(): void =
   libevdev_uinput_destroy(webfisherDevice)
@@ -60,9 +59,9 @@ proc cleanupDevice*(): void =
 
 proc manageKey(key: int, state: int): void =
   libevdev_uinput_write_event(webfisherDevice, EV_KEY, key, state)
-  sleep(10) # Buffer time so listeners can see events more consistently
+  sleep(uinputTimeout) # Buffer time so listeners can see events more consistently
   libevdev_uinput_write_event(webfisherDevice, EV_SYN, SYN_REPORT, 0)
-  sleep(10)
+  sleep(uinputTimeout)
 
 proc pressKey(key: int): void =
   manageKey(key, 1)
@@ -70,23 +69,28 @@ proc pressKey(key: int): void =
 proc releaseKey(key: int): void =
   manageKey(key, 0)
 
-proc pressInteract*(time: float): void =
+proc pressInteract*(time: int): void =
   pressKey(KEY_E)
-  sleep(time.int)
+  sleep(time)
   releaseKey(KEY_E)
 
-proc pressNum*(num: int, time: float): void =
+proc pressBaitSelect*(time: int): void =
+  pressKey(KEY_B)
+  sleep(time)
+  releaseKey(KEY_B)
+
+proc pressNum*(num: int, time: int): void =
   # The const for KEY_num is the number + 1. Ex: KEY_1 = 2
   # We also tell the user to use 10 instead of 0
   pressKey(num + 1)
-  sleep(time.int)
+  sleep(time)
   releaseKey(num + 1)
 
 proc manageMouse(state: int): void =
   libevdev_uinput_write_event(webfisherDevice, EV_KEY, BTN_LEFT, state)
-  sleep(10)
+  sleep(uinputTimeout)
   libevdev_uinput_write_event(webfisherDevice, EV_SYN, SYN_REPORT, 0)
-  sleep(10)
+  sleep(uinputTimeout)
 
 proc pressMouse*(): void =
   manageMouse(1)
@@ -94,9 +98,9 @@ proc pressMouse*(): void =
 proc releaseMouse*(): void =
   manageMouse(0)
 
-proc pressMouse*(time: float): void =
+proc pressMouse*(time: int): void =
   pressMouse()
-  sleep(time.int)
+  sleep(time)
   releaseMouse()
 
 proc moveMouseAbs*(x, y: int): void =
@@ -115,32 +119,23 @@ proc moveMouseAbs*(x, y: int): void =
     destX, destY)
 
   discard XFlush(webfisherDisplay)
-  sleep(10)
+  sleep(uinputTimeout)
 
-# Stuff that may get used in the future idk
-# proc getCursorPosition(): CursorPos =
-#   var
-#     rootReturn, childReturn: Window
-#     # winX and winY are unused because the child window is the root display but maybe we add program detection and no longer need the root window in the future
-#     rootX, rootY, winX, winY: cint
-#     maskReturn: cuint
+proc moveMouseRel*(x, y: int): void =
+  var
+    # Most of this is unused since we use the root display so source doesn't apply
+    # wSrc, wDest: Window # Unused
+    srcX, srcY: cint # Unused
+    srcW, srcH: cuint # Unused
+    (destX, destY) = (x.cint, y.cint)
 
-#   discard XQueryPointer(webfisherDisplay,
-#     RootWindow(webfisherDisplay, DefaultScreen(webfisherDisplay)),
-#     addr rootReturn, addr childReturn,
-#     addr rootX, addr rootY, addr winX, addr winY,
-#     addr maskReturn)
+  discard XWarpPointer(webfisherDisplay,
+    None,
+    None,
+    srcX, srcY,
+    srcW, srcH,
+    destX, destY)
 
-#   return (rootX, rootY)
-
-# proc printMousePos*(): void =
-#   let (mouseX, mouseY) = getCursorPosition()
-#   echo mouseX, " ", mouseY
-
-# proc moveMouseRel*(x, y: int): void =
-#   libevdev_uinput_write_event(webfisherDevice, EV_REL, REL_X, x)
-#   libevdev_uinput_write_event(webfisherDevice, EV_REL, REL_Y, y)
-#   sleep(20)
-#   libevdev_uinput_write_event(webfisherDevice, EV_SYN, SYN_REPORT, 0)
-#   sleep(20)
+  discard XFlush(webfisherDisplay)
+  sleep(uinputTimeout)
 

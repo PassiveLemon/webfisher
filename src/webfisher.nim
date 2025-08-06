@@ -21,7 +21,6 @@ type
     bucketTime: float
     resetTime: float
     sodaTime: float
-    # shopCount: int
 
 
 var globalState: GlobalState = GlobalState(
@@ -30,7 +29,6 @@ var globalState: GlobalState = GlobalState(
   bucketTime: epochTime(),
   resetTime: epochTime(),
   sodaTime: 0.0,
-  # shopCount: 0
 )
 
 
@@ -50,9 +48,8 @@ block webfisher:
     if (globalConfig.gameMode in ["combo", "fish"]) and getFishingGame():
       echo "Doing fishing task..."
       doFish()
-      sleep(2500)
       if doCatchMenu():
-        globalState.lastCatchTime = 0
+        globalState.lastCatchTime = 0.0
       else:
         globalState.lastCatchTime = epochTime()
       globalState.lineCast = false
@@ -61,23 +58,26 @@ block webfisher:
     if (globalConfig.gameMode in ["combo", "bucket"]) and ((epochTime() - globalState.bucketTime) > globalConfig.bucketTime) and (globalState.lineCast == false):
       echo "Doing bucket task..."
       doBucket()
-      sleep(1500)
       discard doCatchMenu()
       globalState.bucketTime = epochTime()
 
     if (globalConfig.gameMode in ["combo", "fish"]):
-      if globalConfig.useSoda and ((epochTime() - globalState.sodaTime) > 300) and (globalState.lastCatchTime < globalConfig.resetTime):
+      if globalConfig.autoShop and getEmptyBait() and (globalState.lineCast == false):
+        echo "Buying and selecting bait..."
+        doShop()
+
+      if globalConfig.autoSoda and ((epochTime() - globalState.sodaTime) > 300.0) and (globalState.lastCatchTime < globalConfig.resetTime) and (globalState.lineCast == false):
         echo "Drinking soda..."
         doSoda()
         globalState.sodaTime = epochTime()
         
       if globalState.lineCast == false:
-        sleep(500)
+        equipRod()
         echo "Casting line..."
         castLine()
         globalState.lineCast = true
 
-      if (globalConfig.gameMode in ["combo", "fish"]) and ((epochTime() - globalState.resetTime)) > globalConfig.resetTime:
+      if ((epochTime() - globalState.resetTime)) > globalConfig.resetTime:
         echo "Attempting reset..."
         globalState.lineCast = false
         globalState.resetTime = epochTime()

@@ -11,6 +11,9 @@ import
 
 type
   Config* = object
+    autoShop*: bool
+    autoSoda*: bool
+    bait*: int
     bucketTime*: float
     castOnStart*: bool
     castTime*: float
@@ -18,30 +21,33 @@ type
     gameMode*: string
     holdToFish*: bool
     moveCursor*: bool
+    phoneSlot*: int
     resetTime*: float
     rodSlot*: int
     screenConfig*: seq[int]
     sodaSlot*: int
-    useSoda*: bool
 
 
 const
   gameModes: seq[string] = @[ "fish", "bucket", "combo" ]
   configJson: string = """
 {
+  "autoShop": false,
+  "autoSoda": false,
+  "bait": 0,
   "bucketTime": 30.0,
   "castOnStart": false,
   "castTime": 1.0,
   "checkInterval": 0.5,
   "holdToFish": false,
   "moveCursor": true,
+  "phoneSlot": 4,
   "resetTime": 120.0,
   "rodSlot": 1,
   "screenConfig": [
     0, 0, 1920, 1080
   ],
-  "sodaSlot": 5,
-  "useSoda": false
+  "sodaSlot": 5
 }
 """
 
@@ -87,6 +93,7 @@ proc updateConfig(filePath: string): void =
       hostRewrite = true
 
   if hostRewrite:
+    echo "Unspecified value in config file. Adding defaults..."
     try:
       removeFile(filePath)
       writeFile(filePath, pretty(hostConfig))
@@ -110,9 +117,26 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
 
     node["gameMode"] = %cliArgs.mode
 
-  if node["bucketTime"].kind != JFloat:
+  if node["autoShop"].kind != JBool:
+    echo "config autoShop is not a boolean."
+    quit(1)
+
+  if node["autoSoda"].kind != JBool:
+    echo "config autoSoda is not a boolean."
+    quit(1)
+
+  if node["bait"].kind != JInt:
+    echo "config bait is not an int."
+    quit(1)
+  if not (node["bait"].getInt() in 0..7):
+    echo "config bait is not in range 0 to 7."
+    quit(1)
+
+  # If the user specifies an int, just quietly convert it
+  if not (node["bucketTime"].kind in [ JFloat, JInt ]):
     echo "config bucketTime is not a float."
     quit(1)
+  node["bucketTime"] = %(node["bucketTime"].getFloat())
 
   if node["castOnStart"].kind != JBool:
     echo "config castOnStart is not a boolean."
@@ -124,7 +148,7 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
   # Convert seconds to ms at config time
   node["castTime"] = %(node["castTime"].getFloat() * 1000)
 
-  if node["checkInterval"].kind != JFloat:
+  if not (node["checkInterval"].kind in [ JFloat, JInt ]):
     echo "config castTime is not a float."
     quit(1)
   node["checkInterval"] = %(node["checkInterval"].getFloat() * 1000)
@@ -136,16 +160,24 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
   if node["moveCursor"].kind != JBool:
     echo "config moveCursor is not a boolean."
     quit(1)
+
+  if node["phoneSlot"].kind != JInt:
+    echo "config phoneSlot is not an int."
+    quit(1)
+  if not (node["phoneSlot"].getInt() in 1..10):
+    echo "config phoneSlot is not in range 1 to 10."
+    quit(1)
   
-  if node["resetTime"].kind != JFloat:
+  if not (node["resetTime"].kind in [ JFloat, JInt ]):
     echo "config resetTime is not a float."
     quit(1)
+  node["resetTime"] = %(node["resetTime"].getFloat())
 
   if node["rodSlot"].kind != JInt:
     echo "config rodSlot is not an int."
     quit(1)
-  if node["rodSlot"].getInt() > 10:
-    echo "config rodSlot is not in range 0 to 10."
+  if not (node["rodSlot"].getInt() in 1..10):
+    echo "config rodSlot is not in range 1 to 10."
     quit(1)
 
   if node["screenConfig"].kind != JArray:
@@ -163,12 +195,8 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
   if node["sodaSlot"].kind != JInt:
     echo "config sodaSlot is not an int."
     quit(1)
-  if node["sodaSlot"].getInt() > 10:
-    echo "config sodaSlot is not in range 0 to 10."
-    quit(1)
-
-  if node["useSoda"].kind != JBool:
-    echo "config useSoda is not a boolean."
+  if not (node["sodaSlot"].getInt() in 1..10):
+    echo "config sodaSlot is not in range 1 to 10."
     quit(1)
 
   try:

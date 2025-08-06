@@ -6,7 +6,7 @@ import
   ]
 
 import
-  ./meta
+  ./constants
 
 
 type

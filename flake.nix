@@ -30,7 +30,8 @@
           shellHook = ''
             nim_lk | jq --sort-keys > lock.json
             nimble install -d > /dev/null &
-            alias editor="lite-xl &"
+            alias editor="lite-xl $PWD &"
+            alias nr="nix run"
           '';
         };
       };

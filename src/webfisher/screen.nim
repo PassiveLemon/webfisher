@@ -11,7 +11,7 @@ from ./config import globalConfig
 
 
 type
-  Pixel* = object
+  Pixel = object
     color*: culong
     r*, g*, b*: int
 
@@ -56,36 +56,30 @@ proc getPixelColor(screenshot: PXImage; x: int; y: int): Pixel =
   pixel.b = (pixel.color and 0xFF).int
   return pixel
 
-proc getFishingGame*(): bool =
-  let screenshot = getScreenshot()
+proc checkPixels(screenshot: PXImage, pixelList: PixelList, count: int): bool =
   var valid = 0
-
-  for reelPixel in fishingReelPixels:
-    let pixel = getPixelColor(screenshot, reelPixel.x, reelPixel.y)
-    if pixel.r == reelPixel.r and
-        pixel.g == reelPixel.g and
-        pixel.b == reelPixel.b:
+  for checkPixel in pixelList:
+    let pixel = getPixelColor(screenshot, checkPixel.x, checkPixel.y)
+    if pixel.r == checkPixel.r and
+        pixel.g == checkPixel.g and
+        pixel.b == checkPixel.b:
       # We test if at least 3 of the pixels match since the reel could block the pixel
       valid += 1
   discard XDestroyImage(screenshot)
-  if valid >= 3:
+  if valid >= count:
     return true
   else:
     return false
+
+proc getFishingGame*(): bool =
+  let screenshot = getScreenshot()
+  return checkPixels(screenshot, fishingReelPixels, 3)
 
 proc getCatchMenu*(): bool =
   let screenshot = getScreenshot()
-  var valid = 0
+  return checkPixels(screenshot, catchMenuPixels, 3)
 
-  for menuPixel in catchMenuPixels:
-    let pixel = getPixelColor(screenshot, menuPixel.x, menuPixel.y)
-    if pixel.r == menuPixel.r and
-        pixel.g == menuPixel.g and
-        pixel.b == menuPixel.b:
-      valid += 1
-  discard XDestroyImage(screenshot)
-  if valid >= 3:
-    return true
-  else:
-    return false
+proc getEmptyBait*(): bool =
+  let screenshot = getScreenshot()
+  return checkPixels(screenshot, emptyBaitPixels, 2)
 

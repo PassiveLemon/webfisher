@@ -17,8 +17,12 @@ type
     checkInterval*: float
     gameMode*: string
     holdToFish*: bool
+    moveCursor*: bool
     resetTime*: float
+    rodSlot*: int
     screenConfig*: seq[int]
+    sodaSlot*: int
+    useSoda*: bool
 
 
 const
@@ -30,10 +34,14 @@ const
   "castTime": 1.0,
   "checkInterval": 0.5,
   "holdToFish": false,
+  "moveCursor": true,
   "resetTime": 120.0,
+  "rodSlot": 1,
   "screenConfig": [
     0, 0, 1920, 1080
-  ]
+  ],
+  "sodaSlot": 5,
+  "useSoda": false
 }
 """
 
@@ -124,9 +132,20 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
   if node["holdToFish"].kind != JBool:
     echo "config holdToFish is not a boolean."
     quit(1)
+
+  if node["moveCursor"].kind != JBool:
+    echo "config moveCursor is not a boolean."
+    quit(1)
   
   if node["resetTime"].kind != JFloat:
     echo "config resetTime is not a float."
+    quit(1)
+
+  if node["rodSlot"].kind != JInt:
+    echo "config rodSlot is not an int."
+    quit(1)
+  if node["rodSlot"].getInt() > 10:
+    echo "config rodSlot is not in range 0 to 10."
     quit(1)
 
   if node["screenConfig"].kind != JArray:
@@ -140,6 +159,17 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
     except IndexDefect:
       echo fmt"config screenConfig is missing a value."
       quit(1)
+
+  if node["sodaSlot"].kind != JInt:
+    echo "config sodaSlot is not an int."
+    quit(1)
+  if node["sodaSlot"].getInt() > 10:
+    echo "config sodaSlot is not in range 0 to 10."
+    quit(1)
+
+  if node["useSoda"].kind != JBool:
+    echo "config useSoda is not a boolean."
+    quit(1)
 
   try:
     json = to(node, Config)

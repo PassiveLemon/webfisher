@@ -5,7 +5,7 @@ import
     xutil
   ]
 
-import ./pixel
+import ./constants
 
 from ./config import globalConfig
 
@@ -17,7 +17,6 @@ type
 
 
 var webfisherDisplay: PDisplay
-
 
 # saveToPPM: https://github.com/nim-lang/x11/blob/29aca5e519ebf5d833f63a6a2769e62ec7bfb83a/examples/xshmex.nim#L40
 # Only here for testing
@@ -40,12 +39,12 @@ proc cleanupDisplay*(): void =
 
 proc getScreenshot(): PXImage =
   var screenshot = XGetImage(webfisherDisplay,
-                            RootWindow(webfisherDisplay, DefaultScreen(webfisherDisplay)),
-                            globalConfig.screenConfig[0].cint,
-                            globalConfig.screenConfig[1].cint,
-                            globalConfig.screenConfig[2].cuint,
-                            globalConfig.screenConfig[3].cuint,
-                            AllPlanes, ZPixmap)
+    RootWindow(webfisherDisplay, DefaultScreen(webfisherDisplay)),
+    globalConfig.screenConfig[0].cint,
+    globalConfig.screenConfig[1].cint,
+    globalConfig.screenConfig[2].cuint,
+    globalConfig.screenConfig[3].cuint,
+    AllPlanes, ZPixmap)
   # screenshot.saveToPPM("./screenshot.ppm")
   return screenshot
 

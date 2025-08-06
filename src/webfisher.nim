@@ -16,18 +16,20 @@ import
 
 type
   GlobalState* = object
+    lastCatchTime: float
     lineCast: bool
     bucketTime: float
     resetTime: float
-    # sodaTime: float
+    sodaTime: float
     # shopCount: int
 
 
 var globalState: GlobalState = GlobalState(
-  lineCast: true,
+  lastCatchTime: 300.0,
+  lineCast: false,
   bucketTime: epochTime(),
   resetTime: epochTime(),
-  # sodaTime: epochTime(),
+  sodaTime: 0.0,
   # shopCount: 0
 )
 
@@ -37,10 +39,11 @@ block webfisher:
   initDisplay()
   initDevice()
 
-  if globalConfig.castOnStart == true:
-    globalState.lineCast = false
-
   echo fmt"Started in {globalConfig.gameMode} mode."
+
+  if globalConfig.castOnStart == true:
+    castLine()
+    globalState.lineCast = true
 
   while true:
     sleep((globalConfig.checkInterval).int)
@@ -48,7 +51,10 @@ block webfisher:
       echo "Doing fishing task..."
       doFish()
       sleep(2500)
-      doCatchMenu()
+      if doCatchMenu():
+        globalState.lastCatchTime = 0
+      else:
+        globalState.lastCatchTime = epochTime()
       globalState.lineCast = false
       globalState.resetTime = epochTime()
 
@@ -56,17 +62,24 @@ block webfisher:
       echo "Doing bucket task..."
       doBucket()
       sleep(1500)
-      doCatchMenu()
+      discard doCatchMenu()
       globalState.bucketTime = epochTime()
 
-    if globalState.lineCast == false:
-      sleep(500)
-      echo "Casting line..."
-      castLine()
-      globalState.lineCast = true
+    if (globalConfig.gameMode in ["combo", "fish"]):
+      if globalConfig.useSoda and ((epochTime() - globalState.sodaTime) > 300) and (globalState.lastCatchTime < globalConfig.resetTime):
+        echo "Drinking soda..."
+        doSoda()
+        globalState.sodaTime = epochTime()
+        
+      if globalState.lineCast == false:
+        sleep(500)
+        echo "Casting line..."
+        castLine()
+        globalState.lineCast = true
 
-    if ((epochTime() - globalState.resetTime)) > globalConfig.resetTime:
-      echo "Attempting reset..."
-      globalState.lineCast = false
-      globalState.resetTime = epochTime()
+      if (globalConfig.gameMode in ["combo", "fish"]) and ((epochTime() - globalState.resetTime)) > globalConfig.resetTime:
+        echo "Attempting reset..."
+        globalState.lineCast = false
+        globalState.resetTime = epochTime()
+        globalState.lastCatchTime = epochTime()
 

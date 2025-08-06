@@ -13,3 +13,10 @@ const
                                   (1500, 950, 255, 238, 213), 
                                   (400, 950, 255, 238, 213)]
 
+
+# General uinput delays/lengths (default 20 ms)
+# Key press delays/lengths
+# Animation delays/lengths
+# Equiping item
+# Drinking soda
+

@@ -1,6 +1,4 @@
 {
-  description = "WebFisher";
-
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
 

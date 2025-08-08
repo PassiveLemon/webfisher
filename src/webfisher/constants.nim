@@ -4,7 +4,7 @@ type
 
 
 const
-  releaseVersion* = "1.0.0"
+  releaseVersion* = "1.1.0"
 
   fishingReelPixels*: PixelList = @[
     (428, 785, 156, 145, 74),

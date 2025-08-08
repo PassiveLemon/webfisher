@@ -6,7 +6,8 @@ import
   ]
 
 import
-  ./cli
+  ./cli,
+  ./logging
 
 
 type
@@ -69,16 +70,16 @@ proc createConfig(filePath: string): void =
     try:
       createDir(parentPath)
     except IOError, OSError:
-      echo fmt"Could not create {parentPath}"
+      fatal(fmt"Could not create {parentPath}")
       quit(1)
 
   if not fileExists(filePath):
     try:
       writeFile(filePath, configJson)
     except IOError, OSError:
-      echo fmt"Could not write to {filePath}"
+      fatal(fmt"Could not write to {filePath}")
     finally:
-      echo "Config file does not exist. Creating..."
+      notice("Config file does not exist. Creating...")
 
 # Add missing keys from the configJson const to the host config
 proc updateConfig(filePath: string): void =
@@ -93,12 +94,12 @@ proc updateConfig(filePath: string): void =
       hostRewrite = true
 
   if hostRewrite:
-    echo "Unspecified value in config file. Adding defaults..."
+    notice("Unspecified value in config file. Adding defaults...")
     try:
       removeFile(filePath)
       writeFile(filePath, pretty(hostConfig))
     except IOError, OSError:
-      echo "Could not update config file."
+      fatal("Could not update config file.")
 
 # Check and return parsed config
 proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
@@ -108,101 +109,101 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
 
   # We can load CLI options into the programs config without writing them to the config file
   if cliArgs.mode == "":
-    echo fmt"Argument MODE not provided. Defaulting to {gameModes[0]}..."
+    notice(fmt"Argument MODE not provided. Defaulting to {gameModes[0]}...")
     node["gameMode"] = %gameModes[0]
   else:
     if not gameModes.contains(cliArgs.mode):
-      echo fmt"{cliArgs.mode} is not a valid argument."
+      fatal(fmt"{cliArgs.mode} is not a valid argument.")
       quit(1)
 
     node["gameMode"] = %cliArgs.mode
 
   if node["autoShop"].kind != JBool:
-    echo "config autoShop is not a boolean."
+    fatal("config autoShop is not a boolean.")
     quit(1)
 
   if node["autoSoda"].kind != JBool:
-    echo "config autoSoda is not a boolean."
+    fatal("config autoSoda is not a boolean.")
     quit(1)
 
   if node["bait"].kind != JInt:
-    echo "config bait is not an int."
+    fatal("config bait is not an int.")
     quit(1)
   if not (node["bait"].getInt() in 0..7):
-    echo "config bait is not in range 0 to 7."
+    fatal("config bait is not in range 0 to 7.")
     quit(1)
 
   # If the user specifies an int, just quietly convert it
   if not (node["bucketTime"].kind in [ JFloat, JInt ]):
-    echo "config bucketTime is not a float."
+    fatal("config bucketTime is not a float.")
     quit(1)
   node["bucketTime"] = %(node["bucketTime"].getFloat())
 
   if node["castOnStart"].kind != JBool:
-    echo "config castOnStart is not a boolean."
+    fatal("config castOnStart is not a boolean.")
     quit(1)
   
   if node["castTime"].kind != JFloat:
-    echo "config castTime is not a float."
+    fatal("config castTime is not a float.")
     quit(1)
   # Convert seconds to ms at config time
   node["castTime"] = %(node["castTime"].getFloat() * 1000)
 
   if not (node["checkInterval"].kind in [ JFloat, JInt ]):
-    echo "config castTime is not a float."
+    fatal("config castTime is not a float.")
     quit(1)
   node["checkInterval"] = %(node["checkInterval"].getFloat() * 1000)
 
   if node["holdToFish"].kind != JBool:
-    echo "config holdToFish is not a boolean."
+    fatal("config holdToFish is not a boolean.")
     quit(1)
 
   if node["moveCursor"].kind != JBool:
-    echo "config moveCursor is not a boolean."
+    fatal("config moveCursor is not a boolean.")
     quit(1)
 
   if node["phoneSlot"].kind != JInt:
-    echo "config phoneSlot is not an int."
+    fatal("config phoneSlot is not an int.")
     quit(1)
   if not (node["phoneSlot"].getInt() in 1..10):
-    echo "config phoneSlot is not in range 1 to 10."
+    fatal("config phoneSlot is not in range 1 to 10.")
     quit(1)
   
   if not (node["resetTime"].kind in [ JFloat, JInt ]):
-    echo "config resetTime is not a float."
+    fatal("config resetTime is not a float.")
     quit(1)
   node["resetTime"] = %(node["resetTime"].getFloat())
 
   if node["rodSlot"].kind != JInt:
-    echo "config rodSlot is not an int."
+    fatal("config rodSlot is not an int.")
     quit(1)
   if not (node["rodSlot"].getInt() in 1..10):
-    echo "config rodSlot is not in range 1 to 10."
+    fatal("config rodSlot is not in range 1 to 10.")
     quit(1)
 
   if node["screenConfig"].kind != JArray:
-    echo "config screenConfig is not a list."
+    fatal("config screenConfig is not a list.")
     quit(1)
   for v in 0..3:
     try:
       if node["screenConfig"][v].kind != JInt:
-        echo fmt"config screenConfig element {v + 1} is not an integer."
+        fatal(fmt"config screenConfig element {v + 1} is not an integer.")
         quit(1)
     except IndexDefect:
-      echo fmt"config screenConfig is missing a value."
+      fatal(fmt"config screenConfig is missing a value.")
       quit(1)
 
   if node["sodaSlot"].kind != JInt:
-    echo "config sodaSlot is not an int."
+    fatal("config sodaSlot is not an int.")
     quit(1)
   if not (node["sodaSlot"].getInt() in 1..10):
-    echo "config sodaSlot is not in range 1 to 10."
+    fatal("config sodaSlot is not in range 1 to 10.")
     quit(1)
 
   try:
     json = to(node, Config)
   except JsonParsingError:
-    echo "Config file is not valid json."
+    fatal("Config file is not valid json.")
     quit(1)
   finally:
     return json
@@ -210,6 +211,8 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
 proc initConfig*(): void =
   let cliArgs = processCliArgs()
   var configDir = getRealUserConfigDir()
+
+  initLogger(cliArgs.timestamps, cliArgs.loglevel)
 
   if cliArgs.file != "":
     configDir = cliArgs.file

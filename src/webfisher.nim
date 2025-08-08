@@ -9,6 +9,7 @@ import
   webfisher / [
     config,
     evdev,
+    logging,
     screen,
     task,
   ]
@@ -37,7 +38,7 @@ block webfisher:
   initDisplay()
   initDevice()
 
-  echo fmt"Started in {globalConfig.gameMode} mode."
+  info(fmt"Started in {globalConfig.gameMode} mode.")
 
   if globalConfig.castOnStart == true:
     castLine()
@@ -46,7 +47,7 @@ block webfisher:
   while true:
     sleep((globalConfig.checkInterval).int)
     if (globalConfig.gameMode in ["combo", "fish"]) and getFishingGame():
-      echo "Doing fishing task..."
+      info("Doing fishing task...")
       doFish()
       if doCatchMenu():
         globalState.lastCatchTime = 0.0
@@ -56,29 +57,28 @@ block webfisher:
       globalState.resetTime = epochTime()
 
     if (globalConfig.gameMode in ["combo", "bucket"]) and ((epochTime() - globalState.bucketTime) > globalConfig.bucketTime) and (globalState.lineCast == false):
-      echo "Doing bucket task..."
+      info("Doing bucket task...")
       doBucket()
       discard doCatchMenu()
       globalState.bucketTime = epochTime()
 
     if (globalConfig.gameMode in ["combo", "fish"]):
       if globalConfig.autoShop and getEmptyBait() and (globalState.lineCast == false):
-        echo "Buying and selecting bait..."
+        info("Buying and selecting bait...")
         doShop()
 
       if globalConfig.autoSoda and ((epochTime() - globalState.sodaTime) > 300.0) and (globalState.lastCatchTime < globalConfig.resetTime) and (globalState.lineCast == false):
-        echo "Drinking soda..."
+        info("Drinking soda...")
         doSoda()
         globalState.sodaTime = epochTime()
         
       if globalState.lineCast == false:
-        equipRod()
-        echo "Casting line..."
+        info("Casting line...")
         castLine()
         globalState.lineCast = true
 
       if ((epochTime() - globalState.resetTime)) > globalConfig.resetTime:
-        echo "Attempting reset..."
+        warn("Attempting reset...")
         globalState.lineCast = false
         globalState.resetTime = epochTime()
         globalState.lastCatchTime = epochTime()

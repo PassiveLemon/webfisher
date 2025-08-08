@@ -4,20 +4,23 @@ import
 import
   ./constants,
   ./evdev,
+  ./logging,
   ./screen
 
 from ./config import globalConfig
 
 
 proc cleanup() {.noconv.} =
-  echo "Cleaning up..."
-  cleanupDisplay()
+  notice("Cleaning up evdev device...")
   cleanupDevice()
+  notice("Cleaning up x11 display...")
+  cleanupDisplay()
+  notice("Exiting...")
   quit(0)
 
 setControlCHook(cleanup)
 
-proc moveCursorToScreen*(): void =
+proc moveCursorToScreen(): void =
   if globalConfig.moveCursor:
     var x, y: int
     # Center of the intended screen
@@ -26,27 +29,38 @@ proc moveCursorToScreen*(): void =
     moveMouseAbs(x, y)
     sleep(uinputTimeout)
 
-proc equipRod*(): void =
+proc equipRod(): void =
   moveCursorToScreen()
   pressNum(globalConfig.rodSlot, uinputTime)
+  sleep(animationEquipItem)
+
+proc equipSoda(): void =
+  moveCursorToScreen()
+  pressNum(globalConfig.sodaSlot, uinputTime)
+  sleep(animationEquipItem)
+
+proc equipPhone(): void =
+  moveCursorToScreen()
+  pressNum(globalConfig.phoneSlot, uinputTime)
   sleep(animationEquipItem)
 
 proc doCatchMenu*(): bool =
   moveCursorToScreen()
   sleep(animationCatchMenu)
   if getCatchMenu():
-    echo "Nice catch!"
+    info("Nice catch!")
     while getCatchMenu():
       pressMouse(uinputTime)
       sleep(animationMenuTimeout)
     sleep(animationCatchMenu - animationMenuClose)
     return true
   else:
-    echo "No catch detected."
+    notice("No catch detected.")
     return false
 
 proc castLine*(): void =
   moveCursorToScreen()
+  equipRod()
   pressMouse(globalConfig.castTime.int)
 
 proc doFish*(): void =
@@ -68,14 +82,12 @@ proc doBucket*(): void =
 proc doSoda*(): void =
   moveCursorToScreen()
   # Select soda
-  pressNum(globalConfig.sodaSlot, uinputTime)
-  sleep(animationEquipItem)
+  equipSoda()
   # Use soda
   pressMouse(uinputTime)
   sleep(animationDrinkSoda)
   # Select rod
-  pressNum(globalConfig.rodSlot, uinputTime)
-  sleep(animationEquipItem)
+  equipRod()
 
 proc shopBait(num: int): void =
   let
@@ -109,8 +121,7 @@ proc selectBait(num: int): void =
 proc doShop*(): void =
   moveCursorToScreen()
   # Select phone
-  pressNum(globalConfig.phoneSlot, uinputTime)
-  sleep(animationEquipItem)
+  equipPhone()
   # Use phone
   pressMouse(uinputTime)
   sleep(animationMenuTimeout)
@@ -131,6 +142,5 @@ proc doShop*(): void =
   pressBaitSelect(uinputTime)
   sleep(animationBaitSelect - animationMenuClose)
   # Select rod
-  pressNum(globalConfig.rodSlot, uinputTime)
-  sleep(animationEquipItem)
+  equipRod()
 

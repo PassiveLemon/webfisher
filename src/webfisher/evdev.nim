@@ -8,12 +8,13 @@ import
     xlib
   ]
 
-import ./constants
+import
+  ./constants,
+  ./logging
 
 import
   libevdev,
   linux/input
-
 
 
 var
@@ -44,7 +45,7 @@ proc createDevice(): ptr libevdev_uinput =
 
   let libevdevUinputRet = libevdev_uinput_create_from_device(evdev, LIBEVDEV_UINPUT_OPEN_MANAGED, addr uinput)
   if libevdevUinputRet < 0:
-    echo fmt"Could not create libevdev uinput device: code {libevdevUinputRet}"
+    fatal(fmt"Could not create libevdev uinput device: code {libevdevUinputRet}")
     quit(1)
 
   return uinput

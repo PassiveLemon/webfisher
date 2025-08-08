@@ -1,31 +1,48 @@
-import std/logging
+import
+  std / [
+    logging,
+    tables,
+    strutils,
+    strformat
+  ]
 
-var
-  consoleLog = newConsoleLogger(fmtStr="[$levelname]: ")
-  lowestLogLevel = 1
 
-proc initLogger*(timestamps: bool, loglevel: int): void =
-  lowestLogLevel = loglevel
-  if timestamps:
+var consoleLog = newConsoleLogger(fmtStr="[$levelname]: ")
+
+
+proc initLogger*(lvl: string, ts: bool): void =
+  if ts:
     consoleLog = newConsoleLogger(fmtStr="[$datetime][$levelname]: ")
 
+  case lvl:
+    of "", "i", "info", "5":
+      setLogFilter(lvlInfo)
+    of "n", "notice", "4":
+      setLogFilter(lvlNotice)
+    of "w", "warn", "3":
+      setLogFilter(lvlWarn)
+    of "e", "error", "2":
+      setLogFilter(lvlError)
+    of "f", "fatal", "1":
+      setLogFilter(lvlFatal)
+    of "none", "0":
+      setLogFilter(lvlNone)
+    else:
+      consoleLog.log(lvlFatal, fmt"{lvl} is not a valid value for log-level.")
+      quit(1)
+
 proc info*(str: string): void =
-  if lowestLogLevel > 4:
-    consoleLog.log(lvlInfo, str)
+  consoleLog.log(lvlInfo, str)
 
 proc notice*(str: string): void =
-  if lowestLogLevel > 3:
-    consoleLog.log(lvlNotice, str)
+  consoleLog.log(lvlNotice, str)
 
 proc warn*(str: string): void =
-  if lowestLogLevel > 2:
-    consoleLog.log(lvlWarn, str)
+  consoleLog.log(lvlWarn, str)
 
 proc error*(str: string): void =
-  if lowestLogLevel > 1:
-    consoleLog.log(lvlError, str)
+  consoleLog.log(lvlError, str)
 
 proc fatal*(str: string): void =
-  if lowestLogLevel > 0:
-    consoleLog.log(lvlFatal, str)
+  consoleLog.log(lvlFatal, str)
 

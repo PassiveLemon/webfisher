@@ -212,7 +212,7 @@ proc initConfig*(): void =
   let cliArgs = processCliArgs()
   var configDir = getRealUserConfigDir()
 
-  initLogger(cliArgs.timestamps, cliArgs.loglevel)
+  initLogger(cliArgs.loglevel, cliArgs.timestamps)
 
   if cliArgs.file != "":
     configDir = cliArgs.file

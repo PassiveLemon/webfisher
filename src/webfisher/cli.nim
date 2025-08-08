@@ -2,9 +2,7 @@ import
   std / [
     os,
     strformat,
-    parseopt,
-    tables,
-    strutils
+    parseopt
   ]
 
 import
@@ -14,19 +12,9 @@ import
 type
   CliArgs* = object
     file*: string
-    loglevel*: int
+    loglevel*: string
     mode*: string
     timestamps*: bool
-
-
-const logLevel = {
-  "info": 5,
-  "notice": 4,
-  "warn": 3,
-  "error": 2,
-  "fatal": 1,
-  "none": 0
-}.toTable
 
 
 proc cliHelp(): void =
@@ -67,10 +55,7 @@ proc processCliArgs*(): CliArgs =
           of "t", "timestamps":
             cliArgs.timestamps = true
           of "l", "log-level":
-            try:
-              cliArgs.loglevel = logLevel[toLower(val)]
-            except KeyError:
-              echo fmt"[FATAL]: {val} is not a valid value for log-level."
+            cliArgs.loglevel = val
           of "f", "file":
             cliArgs.file = expandTilde(val)
       of cmdEnd: assert(false)

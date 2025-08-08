@@ -1,8 +1,6 @@
 import
   std / [
     logging,
-    tables,
-    strutils,
     strformat
   ]
 

@@ -28,7 +28,7 @@ Features:
   - Arguments can be found by tacking `-h` or `--help`
 
 > [!IMPORTANT]
-> You will likely need to configure the `screenConfig` configuration option (see below). This is only tested on a screen resolution of 1920x1080. Other resolutions probably do not work.
+> You will likely need to configure the `screenConfig` configuration option (see below). This is only tested on a screen resolution of 1920x1080. Other resolutions probably do not work. Also, Webfisher takes screenshots from X11, so any desktop popups that cover necessary pixels (bait count, fishing reel, and menus) may cause problems.
 
 > [!IMPORTANT]
 > Your interact key MUST be `E` (default), and your bait menu key MUST be `B` (default).

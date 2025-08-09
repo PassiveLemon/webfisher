@@ -9,27 +9,27 @@ import
   webfisher / [
     config,
     evdev,
-    logging,
     screen,
-    task,
+    task
   ]
 
 
 type
   GlobalState* = object
-    lastCatchTime: float
     lineCast: bool
+    lastCatchTime: float
     bucketTime: float
     resetTime: float
     sodaTime: float
 
 
 var globalState: GlobalState = GlobalState(
-  lastCatchTime: 300.0,
   lineCast: false,
+  # Add a bunch of buffer time so it won't attempt to use soda until after the first catch
+  lastCatchTime: (epochTime() + 300.0),
   bucketTime: epochTime(),
   resetTime: epochTime(),
-  sodaTime: 0.0,
+  sodaTime: epochTime()
 )
 
 
@@ -38,7 +38,11 @@ block webfisher:
   initDisplay()
   initDevice()
 
-  info(fmt"Started in {globalConfig.gameMode} mode.")
+  echo fmt"Started in {globalConfig.gameMode} mode."
+  if globalConfig.autoSoda:
+    echo "AutoSoda enabled."
+  if globalConfig.autoShop:
+    echo fmt"AutoShop enabled, using bait {globalConfig.bait}."
 
   if globalConfig.castOnStart == true:
     castLine()
@@ -47,7 +51,6 @@ block webfisher:
   while true:
     sleep((globalConfig.checkInterval).int)
     if (globalConfig.gameMode in ["combo", "fish"]) and getFishingGame():
-      info("Doing fishing task...")
       doFish()
       if doCatchMenu():
         globalState.lastCatchTime = 0.0
@@ -57,28 +60,24 @@ block webfisher:
       globalState.resetTime = epochTime()
 
     if (globalConfig.gameMode in ["combo", "bucket"]) and ((epochTime() - globalState.bucketTime) > globalConfig.bucketTime) and (globalState.lineCast == false):
-      info("Doing bucket task...")
       doBucket()
       discard doCatchMenu()
       globalState.bucketTime = epochTime()
 
     if (globalConfig.gameMode in ["combo", "fish"]):
       if globalConfig.autoShop and getEmptyBait() and (globalState.lineCast == false):
-        info("Buying and selecting bait...")
         doShop()
 
       if globalConfig.autoSoda and ((epochTime() - globalState.sodaTime) > 300.0) and (globalState.lastCatchTime < globalConfig.resetTime) and (globalState.lineCast == false):
-        info("Drinking soda...")
         doSoda()
         globalState.sodaTime = epochTime()
         
       if globalState.lineCast == false:
-        info("Casting line...")
         castLine()
         globalState.lineCast = true
 
-      if ((epochTime() - globalState.resetTime)) > globalConfig.resetTime:
-        warn("Attempting reset...")
+      if ((epochTime() - globalState.resetTime) > globalConfig.resetTime):
+        doReset()
         globalState.lineCast = false
         globalState.resetTime = epochTime()
         globalState.lastCatchTime = epochTime()

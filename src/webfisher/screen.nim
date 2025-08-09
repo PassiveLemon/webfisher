@@ -83,3 +83,11 @@ proc getEmptyBait*(): bool =
   let screenshot = getScreenshot()
   return checkPixels(screenshot, emptyBaitPixels, 2)
 
+proc getBaitShop*(): bool =
+  let screenshot = getScreenshot()
+  return checkPixels(screenshot, baitShopPixels, 3)
+
+proc getBaitSelect*(): bool =
+  let screenshot = getScreenshot()
+  return checkPixels(screenshot, baitSelectPixels, 3)
+

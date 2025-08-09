@@ -109,10 +109,10 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
 
   # We can load CLI options into the programs config without writing them to the config file
   if cliArgs.mode == "":
-    notice(fmt"Argument MODE not provided. Defaulting to {gameModes[0]}...")
+    debug(fmt"Argument MODE not provided. Defaulting to {gameModes[0]}...")
     node["gameMode"] = %gameModes[0]
   else:
-    if not gameModes.contains(cliArgs.mode):
+    if not (cliArgs.mode in gameModes):
       fatal(fmt"{cliArgs.mode} is not a valid argument.")
       quit(1)
 

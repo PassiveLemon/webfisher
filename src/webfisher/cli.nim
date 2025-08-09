@@ -28,7 +28,7 @@ Options:
   -h, --help                  Show help and exit
   -v, --version               Show version and exit
   -t, --timestamps            Print timestamps when logging
-  -l=LVL, --log=LVL           Logging level. One of "info", "notice", "warn", "error", "fatal", "none"
+  -l=LVL, --log=LVL           Logging level. One of "debug", "info" (default), "notice", "warn", "error", "fatal", "none"
   -f=FILE, --file=FILE        Location of the configuration file
 """
   quit(0)

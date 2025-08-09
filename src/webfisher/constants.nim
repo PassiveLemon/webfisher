@@ -23,23 +23,32 @@ const
     (1845, 1025, 16, 28, 49),
     (1838, 1017, 16, 28, 49)
   ]
+  baitShopPixels*: PixelList = @[
+    (192, 157, 90, 117, 90),
+    (1161, 157, 90, 117, 90), 
+    (1135, 900, 255, 238, 213), 
+    (210, 900, 255, 238, 213)
+  ]
+  baitSelectPixels*: PixelList = @[
+    (400, 350, 255, 238, 213),
+    (1515, 350, 90, 117, 90), 
+    (1521, 741, 255, 238, 213), 
+    (397, 741, 255, 238, 213)
+  ]
 
   # We only use the worms as the start since we then just move the cursor by known a known pixel distance to hit the other baits
   baitShopWorm*: CursorPos = (280, 370)
   baitShopPixelDistance*: int = 107
-
   baitSelectWorm*: CursorPos = (566, 495)
   baitSelectPixelDistance*: int = 38
 
   animationCatchFish*: int = 2000
-  animationMenuTimeout*: int = 250
   animationCatchMenu*: int = 1250
-  animationBaitShop*: int = 1250 # Needs a high delay because of a large lag spike when opening the shop
-  animationBaitSelect*: int = 650
   animationEquipItem*: int = 1250
   animationDrinkSoda*: int = 1750
 
-  animationMenuClose*: int = 500 # This is to cut the time on a closing animation because they do not take as long
+  animationMenuDelay*: int = 250
+  animationMenuClose*: int = 500
 
   uinputTimeout*: int = 10
   uinputTime*: int = 20

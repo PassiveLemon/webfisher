@@ -9,8 +9,8 @@ import
   ]
 
 import
-  ./constants,
-  ./logging
+  ../constants,
+  ../logging
 
 import
   libevdev,

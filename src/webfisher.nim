@@ -8,7 +8,7 @@ import
 import
   webfisher / [
     config,
-    evdev,
+    input,
     screen,
     task
   ]

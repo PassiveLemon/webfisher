@@ -3,7 +3,7 @@ import
 
 import
   ./constants,
-  ./evdev,
+  ./input,
   ./logging,
   ./screen
 

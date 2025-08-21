@@ -17,14 +17,12 @@ jobs:
         os:
           - ubuntu-latest
           - windows-latest
-        nim-version:
-          - 2.2.0
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
 
-     - name: Cache nimble
+    - name: Cache nimble
       id: cache-nimble
       uses: actions/cache@v4
       with:
@@ -34,7 +32,7 @@ jobs:
     - name: Setup nim
       uses: jiro4989/setup-nim-action@v2
       with:
-        nim-version: ${{ matrix.nim-version }}
+        nim-version: 2.2.0
 
     - name: Install Packages
       run: nimble install -d -y

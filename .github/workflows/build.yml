@@ -37,13 +37,20 @@ jobs:
     - name: Install Packages
       run: nimble install -d -y
 
-    - name: Build test
+    - name: Build Webfisher
       run: nimble build -Y
 
-    - name: Upload builds
+    - name: Upload Linux artifact
+      if: ${{ runner.os }} == 'Linux'
       uses: actions/upload-artifact@v4
-      name: build-artifacts-${{ matrix.os }}
-      with: |
-        webfisher
-        webfisher.exe
+      with:
+        name: webisher-linux
+        path: webfisher
+
+    - name: Upload Windows artifact
+      if: ${{ runner.os }} == 'Windows'
+      uses: actions/upload-artifact@v4
+      with:
+        name: webfisher-windows
+        path: webfisher.exe
 

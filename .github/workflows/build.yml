@@ -41,15 +41,15 @@ jobs:
       run: nimble build -Y
 
     - name: Upload Linux artifact
-      if: ${{ runner.os }} == 'Linux'
       uses: actions/upload-artifact@v4
+      if: ${{ runner.os == 'Linux' }}
       with:
         name: webisher-linux
         path: webfisher
 
     - name: Upload Windows artifact
-      if: ${{ runner.os }} == 'Windows'
       uses: actions/upload-artifact@v4
+      if: ${{ runner.os == 'Windows' }}
       with:
         name: webfisher-windows
         path: webfisher.exe

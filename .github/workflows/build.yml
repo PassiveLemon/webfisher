@@ -44,7 +44,7 @@ jobs:
       uses: actions/upload-artifact@v4
       if: ${{ runner.os == 'Linux' }}
       with:
-        name: webisher-linux
+        name: webfisher-linux
         path: webfisher
 
     - name: Upload Windows artifact

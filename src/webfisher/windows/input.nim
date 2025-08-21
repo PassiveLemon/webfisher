@@ -1,9 +1,5 @@
 import
-  std / [
-    os,
-    strutils,
-    strformat
-  ]
+  std/os
 
 import winim
 
@@ -20,19 +16,19 @@ proc initDevice*(): void =
 proc cleanupDevice*(): void =
   return
 
-proc manageKey(key: int16, state: int): void =
+proc manageKey(key: int16, state: DWORD): void =
   var input: INPUT
   input.type = INPUT_KEYBOARD
   input.ki.wVk = key.WORD
-  input.ki.dwFlags = state.DWORD
+  input.ki.dwFlags = state
   discard SendInput(1, addr input, sizeof(input).int32)
   sleep(uinputTimeout)
 
 proc pressKey(key: int16): void =
-  manageKey(key, 1)
+  manageKey(key, 0)
 
 proc releaseKey(key: int16): void =
-  manageKey(key, 0)
+  manageKey(key, KEYEVENTF_KEYUP)
 
 proc pressInteract*(time: int): void =
   pressKey(0x45) # E
@@ -45,9 +41,10 @@ proc pressBaitSelect*(time: int): void =
   releaseKey(0x42)
 
 proc pressNum*(num: int, time: int): void =
-  pressKey(num.int16)
+  let numVk = (0x30 + num).int16
+  pressKey(numVk)
   sleep(time)
-  releaseKey(num.int16)
+  releaseKey(numVk)
 
 proc manageMouse(state: DWORD): void =
   var input: INPUT

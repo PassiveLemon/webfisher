@@ -152,7 +152,7 @@ proc selectBaitMenu(): void =
       return
     sleep(animationMenuDelay)
   baitMenuAttempts = 0
-  # Select baitb11
+  # Select bait
   selectBait(globalConfig.bait)
   # Wait for select to close
   pressBaitSelect(uinputTime)

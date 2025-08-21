@@ -82,7 +82,8 @@ proc createConfig(filePath: string): void =
     except IOError, OSError:
       fatal(fmt"Could not write to {filePath}")
     finally:
-      notice("Config file does not exist. Creating...")
+      fatal(fmt"Config file was created at {filePath}. Please configure it accordingly before running again.")
+      quit(0)
 
 # Add missing keys from the configJson const to the host config
 proc updateConfig(filePath: string): void =

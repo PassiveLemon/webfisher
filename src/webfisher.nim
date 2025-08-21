@@ -44,6 +44,9 @@ block webfisher:
   if globalConfig.autoShop:
     echo fmt"AutoShop enabled, using bait {globalConfig.bait}."
 
+  # Add some wait time so the user can get situated
+  sleep(5000)
+
   if globalConfig.castOnStart == true:
     castLine()
     globalState.lineCast = true

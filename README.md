@@ -1,5 +1,5 @@
 # webfisher
-A Nim based fishing script for Webfishing
+A Nim based fishing script for Webfishing, supporting Linux and Windows.
 
 Features:
 - Fishing and reeling
@@ -13,29 +13,38 @@ Features:
 > I am not responsible for any bans or data loss as a result of using this. This was a project for me to learn Nim. If you have any concerns, don't use it and be a legitimate player :)
 
 # Dependencies
-- Linux. This is not supported on Windows or MacOS.
-- X11. This is not supported on Wayland.
-- A user in the "input" group or sudo privileges.
-- Nimble packages: `x11` and [`libevdev`](https://github.com/PassiveLemon/libevdev-nim)
+- Linux:
+  - X11, Wayland is not supported.
+  - A user in the "input" group or sudo privileges.
+  - Nimble packages: `x11` and [`libevdev`](https://github.com/PassiveLemon/libevdev-nim)
+- Windows:
+  - Nimble packages: `winim`
 
 # Usage
 ### Nix:
 - You can get the package in my [flake repository](https://github.com/PassiveLemon/lemonake).
+### Windows:
+- Download the executable from [releases](https://github.com/PassiveLemon/webfisher/releases/latest).
 ### Source:
 - Clone the repo, cd to src
 - Run `nim c -r webfisher`
-- Edit the generated config file in your `~/.config/webfisher/config.json`. You can also supply a config file with `-f <path to config.json>`.
+- Edit the generated config file in your `~/.config/webfisher/config.json` (Linux), or `~\Appdata\Roaming\webfisher\config.json` (Windows).
+- If you run Webfisher from the CLI, you can also supply a config file with `-f <path to config.json>`.
   - Arguments can be found by tacking `-h` or `--help`
 
+Upon start, Webfisher will wait 5 seconds before attempting to do anything, so use this time to get Webfishing and your cursor situated.
+
+If you are using Webfisher for the first time, it will create a default config file and quit. Please configure this config file before running it again as it does control your mouse and send keyboard inputs. Details [below](https://github.com/PassiveLemon/webfisher?tab=readme-ov-file#configuration-configjson).
+
 > [!IMPORTANT]
-> You will likely need to configure the `screenConfig` configuration option (see below). This is only tested on a screen resolution of 1920x1080. Other resolutions probably do not work. Also, Webfisher takes screenshots from X11, so any desktop popups that cover necessary pixels (bait count, fishing reel, and menus) may cause problems.
+> You will likely need to configure the `screenConfig` configuration option (see below). This is only tested on a screen resolution of 1920x1080. Other resolutions probably do not work. Also, Webfisher takes screenshots of the entire display, so any desktop popups that cover necessary pixels (bait count, fishing reel, and menus) may cause problems.
 
 > [!IMPORTANT]
 > Your interact key MUST be `E` (default), and your bait menu key MUST be `B` (default).
 
-By default, Webfisher assumes your fishing rod is in slot 1. Configure accordingly.
+By default, Webfisher assumes your fishing rod is in slot 1, phones are in slot 4, and soda is in slot 5. Configure accordingly.
 
-When enabled, autoShop will replenish empty bait whenever possible, but autoSoda will only attempt to use soda when a fish has recently been caught.
+While enabled, autoShop will replenish empty bait whenever possible, but autoSoda will only attempt to use soda when a fish has recently been caught.
 
 When using autoSoda, make sure to:
 - Stock up on soda if you plan to leave it running for a while

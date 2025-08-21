@@ -1,6 +1,6 @@
 # Package
 packageName = "webfisher"
-version = "1.1.1"
+version = "1.3.0"
 author = "PassiveLemon"
 description = "A Nim based fishing script for Webfishing"
 license = "GPL-3.0-only"

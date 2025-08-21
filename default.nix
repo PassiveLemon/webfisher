@@ -5,7 +5,7 @@
 }:
 buildNimPackage (finalAttrs: {
   pname = "webfisher";
-  version = "1.1.1";
+  version = "1.3.0";
 
   src = ./.;
 

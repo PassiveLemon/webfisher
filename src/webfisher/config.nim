@@ -83,6 +83,7 @@ proc createConfig(filePath: string): void =
       fatal(fmt"Could not write to {filePath}")
     finally:
       fatal(fmt"Config file was created at {filePath}. Please configure it accordingly before running again.")
+      discard readLine(stdin)
       quit(0)
 
 # Add missing keys from the configJson const to the host config

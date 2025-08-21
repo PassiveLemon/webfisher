@@ -1,0 +1,44 @@
+name: Build
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - 'master'
+    paths:
+      - '.github/workflows/**'
+      - 'src/**'
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - ubuntu-latest
+          - windows-latest
+        nim-version:
+          - 2.2.0
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+     - name: Cache nimble
+      id: cache-nimble
+      uses: actions/cache@v4
+      with:
+        path: ~/.nimble
+        key: ${{ runner.os }}-nimble-v2-${{ hashFiles('*.nimble') }}
+
+    - name: Setup nim
+      uses: jiro4989/setup-nim-action@v2
+      with:
+        nim-version: ${{ matrix.nim-version }}
+
+    - name: Install Packages
+      run: nimble install -d -y
+
+    - name: Build test
+      run: nimble build -Y
+

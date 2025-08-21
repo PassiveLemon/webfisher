@@ -1,5 +1,4 @@
-import
-  std/os
+import std/os
 
 import winim
 
@@ -81,3 +80,4 @@ proc moveMouseRel*(x, y: int): void =
   input.mi.dwFlags = MOUSEEVENTF_MOVE
   discard SendInput(1, addr input, sizeof(INPUT).int32)
   sleep(uinputTimeout)
+

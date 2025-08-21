@@ -94,3 +94,4 @@ proc getBaitShop*(): bool =
 proc getBaitSelect*(): bool =
   let screenshot = getScreenshot()
   return checkPixels(screenshot, baitSelectPixels, 3)
+

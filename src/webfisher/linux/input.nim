@@ -12,9 +12,7 @@ import
   ../constants,
   ../logging
 
-import
-  libevdev,
-  linux/input
+import libevdev
 
 
 var

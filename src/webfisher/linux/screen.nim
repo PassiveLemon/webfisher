@@ -12,8 +12,7 @@ from ../config import globalConfig
 
 type
   Pixel = object
-    color*: culong
-    r*, g*, b*: int
+    r, g, b: int
 
 
 var webfisherDisplay: PDisplay
@@ -49,11 +48,11 @@ proc getScreenshot(): PXImage =
   return screenshot
 
 proc getPixelColor(screenshot: PXImage; x: int; y: int): Pixel =
+  let color = XGetPixel(screenshot, x.cint, y.cint)
   var pixel: Pixel
-  pixel.color = XGetPixel(screenshot, x.cint, y.cint)
-  pixel.r = ((pixel.color shr 16) and 0xFF).int
-  pixel.g = ((pixel.color shr 8) and 0xFF).int
-  pixel.b = (pixel.color and 0xFF).int
+  pixel.r = ((color shr 16) and 0xFF).int
+  pixel.g = ((color shr 8) and 0xFF).int
+  pixel.b = (color and 0xFF).int
   return pixel
 
 proc checkPixels(screenshot: PXImage, pixelList: PixelList, count: int): bool =
@@ -63,7 +62,7 @@ proc checkPixels(screenshot: PXImage, pixelList: PixelList, count: int): bool =
     if pixel.r == checkPixel.r and
         pixel.g == checkPixel.g and
         pixel.b == checkPixel.b:
-      # We test if at least 3 of the pixels match since the reel could block the pixel
+      # We test if most of the pixels match since the reel could block the pixel
       valid += 1
   discard XDestroyImage(screenshot)
   if valid >= count:

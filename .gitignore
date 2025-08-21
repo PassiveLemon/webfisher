@@ -1,4 +1,7 @@
 **/result
+
 *.out
+# *.exe
+
 *.ppm
 

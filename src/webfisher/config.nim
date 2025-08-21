@@ -57,11 +57,14 @@ var globalConfig*: Config
 
 
 proc getRealUserConfigDir(): string =
-  if (getEnv("USER") == "root") and (getEnv("SUDO_USER") != ""):
-    # Ideally we fetch the config dir for a specific user instead of assuming the location, but I couldn't find anything that does so
-    return "/home" / getEnv("SUDO_USER") / "/.config/webfisher/config.json"
+  if defined(linux):
+    if (getEnv("USER") == "root") and (getEnv("SUDO_USER") != ""):
+      # Ideally we fetch the config dir for a specific user instead of assuming the location, but I couldn't find anything that does so
+      return "/home" / getEnv("SUDO_USER") / "/.config/webfisher/config.json"
+    return getConfigDir() / "/webfisher/config.json"
 
-  return getConfigDir() / "/webfisher/config.json"
+  if defined(windows):
+    return getConfigDir() / "\\webfisher\\config.json"
 
 proc createConfig(filePath: string): void =
   let parentPath = parentDir(filePath)

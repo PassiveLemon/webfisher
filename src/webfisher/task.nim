@@ -2,12 +2,12 @@ import
   std/os
 
 import
-  ./constants,
-  ./input,
-  ./logging,
-  ./screen
+  constants,
+  input,
+  logging,
+  screen
 
-from ./config import globalConfig
+from config import globalConfig
 
 
 proc cleanup() {.noconv.} =
@@ -70,7 +70,7 @@ proc doFish*(): void =
   if globalConfig.holdToFish:
     while getFishingGame():
       pressMouse()
-      sleep(animationMenuDelay)
+      sleep(uinputTime)
     releaseMouse()
   else:
     while getFishingGame():

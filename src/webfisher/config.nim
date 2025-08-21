@@ -6,8 +6,8 @@ import
   ]
 
 import
-  ./cli,
-  ./logging
+  cli,
+  logging
 
 
 type

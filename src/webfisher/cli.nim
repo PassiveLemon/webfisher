@@ -6,7 +6,7 @@ import
   ]
 
 import
-  ./constants
+  constants
 
 
 type

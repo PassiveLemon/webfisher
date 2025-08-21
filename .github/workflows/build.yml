@@ -40,3 +40,10 @@ jobs:
     - name: Build test
       run: nimble build -Y
 
+    - name: Upload builds
+        uses: actions/upload-artifact@v4
+        name: build-artifacts-${{ matrix.os }}
+        with: |
+          webfisher
+          webfisher.exe
+

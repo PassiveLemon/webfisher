@@ -1,8 +1,8 @@
 when defined(linux):
-  import ./linux/screen
+  import linux/screen
   export screen
 
 when defined(windows):
-  import ./windows/screen
+  import windows/screen
   export screen
 

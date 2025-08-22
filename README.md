@@ -26,6 +26,8 @@ Features:
 # Usage
 ### Nix:
 - You can get the package in my [flake repository](https://github.com/PassiveLemon/lemonake).
+### Linux:
+- Download the binary from [releases](https://github.com/PassiveLemon/webfisher/releases/latest) (The one without an extension).
 ### Windows:
 - Download the executable from [releases](https://github.com/PassiveLemon/webfisher/releases/latest).
 ### Source:

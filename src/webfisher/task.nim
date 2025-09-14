@@ -14,9 +14,9 @@ from config import globalConfig
 
 
 proc cleanup() {.noconv.} =
-  debug("Cleaning up evdev device...")
+  debug("Cleaning up input device...")
   cleanupDevice()
-  debug("Cleaning up x11 display...")
+  debug("Cleaning up display...")
   cleanupDisplay()
   notice("Exiting...")
   quit(0)

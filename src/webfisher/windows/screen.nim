@@ -16,7 +16,7 @@ type
 
 
 proc initDisplay*(): void =
-  return
+  discard SetProcessDPIAware()
 
 proc cleanupDisplay*(): void =
   return
@@ -24,8 +24,8 @@ proc cleanupDisplay*(): void =
 proc getScreenshot(): PixelSeq =
   debug("Getting screenshot...")
   let
-    hDesktop = GetDesktopWindow()
-    hDC = GetDC(hDesktop)
+    # hDesktop = GetDesktopWindow()
+    hDC = GetDC(0)
     hMem = CreateCompatibleDC(hDC)
     hBmp = CreateCompatibleBitmap(hDC, globalConfig.screenConfig[2].int32, globalConfig.screenConfig[3].int32)
     oldBmp = SelectObject(hMem, hBmp)
@@ -52,7 +52,7 @@ proc getScreenshot(): PixelSeq =
   discard SelectObject(hMem, oldBmp)
   DeleteObject(hBmp)
   DeleteDC(hMem)
-  ReleaseDC(hDesktop, hDC)
+  ReleaseDC(0, hDC)
 
   return pixels
 
@@ -64,14 +64,13 @@ proc getPixelColor(pixelSeq: PixelSeq; x: int; y: int): Pixel =
   pixel.r = pixelSeq[pixelIndex].r
   pixel.g = pixelSeq[pixelIndex].g
   pixel.b = pixelSeq[pixelIndex].b
-  debug(fmt"Pixel r {pixel.r} g {pixel.g} b {pixel.b}")
   return pixel
 
 proc checkPixels(pixelSeq: PixelSeq; pixelList: PixelList; count: int): bool =
   var valid = 0
   for checkPixel in pixelList:
     let pixel = getPixelColor(pixelSeq, checkPixel.x, checkPixel.y)
-    debug(fmt"checkPixel r {checkPixel.r} g {checkPixel.g} b {checkPixel.b}")
+    debug(fmt"Pixel check real:ideal | r {pixel.r}:{checkPixel.r} | g {pixel.g}:{checkPixel.g} | b {pixel.b}:{checkPixel.b}")
     if pixel.r.int == checkPixel.r and
         pixel.g.int == checkPixel.g and
         pixel.b.int == checkPixel.b:

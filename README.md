@@ -13,7 +13,7 @@ Features:
 > I am not responsible for any bans or data loss as a result of using this. This was a project for me to learn Nim. If you have any concerns, don't use it and be a legitimate player :)
 
 > [!NOTE]
-> Windows Defender and other anti-virus software may flag this as malware. This is likely because Webfisher takes screenshots, controls your mouse and can send keyboard inputs. If you have any doubt, all of the source code and build process is accessible.
+> Windows Defender and other anti-virus/anti-cheat software may flag this as malware and stop it or block functionality. This is likely because Webfisher takes screenshots, controls your mouse and can send keyboard inputs. If you have any doubt, all of the source code and build process is accessible.
 
 # Dependencies
 - Linux:

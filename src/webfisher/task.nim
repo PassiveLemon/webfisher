@@ -77,10 +77,10 @@ proc doFish*(): void =
   moveCursorToScreen()
   if globalConfig.holdToFish:
     while not getFishingGame():
-      sleep(UINPUTTIME)
+      sleep(ANIMATIONMENUDELAY)
     pressMouse()
     while getFishingGame():
-      sleep(UINPUTTIME)
+      sleep(ANIMATIONMENUDELAY)
     releaseMouse()
   else:
     while getFishingGame():

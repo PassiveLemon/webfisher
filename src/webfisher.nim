@@ -47,6 +47,7 @@ block webfisher:
     info(fmt"AutoShop enabled, using bait {globalConfig.bait}.")
 
   # Add some wait time so the user can get situated
+  debug("Waiting for 5 seconds...")
   sleep(5000)
 
   if globalConfig.castOnStart == true:

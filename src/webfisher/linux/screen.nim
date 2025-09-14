@@ -59,14 +59,13 @@ proc getPixelColor(screenshot: PXImage; x: int; y: int): Pixel =
   pixel.r = ((color shr 16) and 0xFF).int
   pixel.g = ((color shr 8) and 0xFF).int
   pixel.b = (color and 0xFF).int
-  debug(fmt"Pixel r {pixel.r} g {pixel.g} b {pixel.b}")
   return pixel
 
 proc checkPixels(screenshot: PXImage, pixelList: PixelList, count: int): bool =
   var valid = 0
   for checkPixel in pixelList:
     let pixel = getPixelColor(screenshot, checkPixel.x, checkPixel.y)
-    debug(fmt"checkPixel r {checkPixel.r} g {checkPixel.g} b {checkPixel.b}")
+    debug(fmt"Pixel check real:ideal | r {pixel.r}:{checkPixel.r} | g {pixel.g}:{checkPixel.g} | b {pixel.b}:{checkPixel.b}")
     if pixel.r == checkPixel.r and
         pixel.g == checkPixel.g and
         pixel.b == checkPixel.b:

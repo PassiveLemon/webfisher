@@ -1,5 +1,8 @@
 import
-  std/os
+  std / [
+    os,
+    strformat
+  ]
 
 import
   constants,
@@ -22,40 +25,45 @@ setControlCHook(cleanup)
 
 proc moveCursorToScreen(): void =
   if globalConfig.moveCursor:
+    debug("Moving cursor to screen...")
     var x, y: int
     # Center-right quarter of the screen so we aren't on top of buttons when navigating interfaces
     x = (globalConfig.screenConfig[0] + ((globalConfig.screenConfig[2] / 2) * 1.5).int)
     y = (globalConfig.screenConfig[1] + (globalConfig.screenConfig[3] / 2).int)
     moveMouseAbs(x, y)
-    sleep(uinputTimeout)
+    sleep(UINPUTTIMEOUT)
 
 proc equipRod(): void =
   moveCursorToScreen()
-  pressNum(globalConfig.rodSlot, animationEquipItem)
+  debug("Equipping rod...")
+  pressNum(globalConfig.rodSlot, ANIMATIONEQUIPITEM)
 
 proc equipSoda(): void =
   moveCursorToScreen()
-  pressNum(globalConfig.sodaSlot, animationEquipItem)
+  debug("Equiping soda...")
+  pressNum(globalConfig.sodaSlot, ANIMATIONEQUIPITEM)
 
 proc equipPhone(): void =
   moveCursorToScreen()
-  pressNum(globalConfig.phoneSlot, animationEquipItem)
+  debug("Equiping phone...")
+  pressNum(globalConfig.phoneSlot, ANIMATIONEQUIPITEM)
 
 proc doCatchMenu*(): bool =
   moveCursorToScreen()
+  debug("Doing catch menu...")
   var catchMenuAttempts: int = 1
   while not getCatchMenu():
     catchMenuAttempts += 1
     if catchMenuAttempts > 20:
       notice("No catch detected.")
       return false
-    sleep(animationMenuDelay)
+    sleep(ANIMATIONMENUDELAY)
 
   info("Nice catch!")
   while getCatchMenu():
-    pressMouse(uinputTime)
-    sleep(animationMenuDelay)
-  sleep(animationCatchMenu - animationMenuClose)
+    pressMouse(UINPUTTIME)
+    sleep(ANIMATIONMENUDELAY)
+  sleep(ANIMATIONCATCHMENU - ANIMATIONMENUCLOSE)
   return true
 
 proc castLine*(): void =
@@ -69,20 +77,20 @@ proc doFish*(): void =
   moveCursorToScreen()
   if globalConfig.holdToFish:
     while not getFishingGame():
-      sleep(uinputTime)
+      sleep(UINPUTTIME)
     pressMouse()
     while getFishingGame():
-      sleep(uinputTime)
+      sleep(UINPUTTIME)
     releaseMouse()
   else:
     while getFishingGame():
-      pressMouse(uinputTime)
-  sleep(animationCatchFish)
+      pressMouse(UINPUTTIME)
+  sleep(ANIMATIONCATCHFISH)
 
 proc doBucket*(): void =
   info("Doing bucket task...")
   moveCursorToScreen()
-  pressInteract(uinputTime)
+  pressInteract(UINPUTTIME)
 
 proc doSoda*(): void =
   info("Drinking soda...")
@@ -90,61 +98,65 @@ proc doSoda*(): void =
   # Select soda
   equipSoda()
   # Use soda
-  pressMouse(animationDrinkSoda)
+  pressMouse(ANIMATIONDRINKSODA)
   # Select rod
   equipRod()
 
 proc shopBait(num: int): void =
+  debug(fmt"Shopping for bait {num}...")
   let
     # Add additional X distance based on the selected bait multiplier
-    baitShopWormX: int = (globalConfig.screenConfig[0] + baitShopWorm[0])
-    baitShopWormY: int = (globalConfig.screenConfig[1] + baitShopWorm[1])
+    baitShopWormX: int = (globalConfig.screenConfig[0] + BAITSHOPWORM[0])
+    baitShopWormY: int = (globalConfig.screenConfig[1] + BAITSHOPWORM[1])
   moveMouseAbs(baitShopWormX, baitShopWormY)
   if num > 0:
-    moveMouseRel(((num - 1) * baitShopPixelDistance), 0)
-    pressMouse(uinputTime)
+    moveMouseRel(((num - 1) * BAITSHOPPIXELSHOPDISTANCE), 0)
+    pressMouse(UINPUTTIME)
   else:
     for i in 1..7:
-      pressMouse(uinputTime)
-      moveMouseRel(baitShopPixelDistance, 0)
+      pressMouse(UINPUTTIME)
+      moveMouseRel(BAITSHOPPIXELSHOPDISTANCE, 0)
 
 proc selectBait(num: int): void =
+  debug(fmt"Selecting bait {num}...")
   let
-    baitSelectWormX: int = (globalConfig.screenConfig[0] + baitSelectWorm[0])
+    baitSelectWormX: int = (globalConfig.screenConfig[0] + BAITSELECTWORM[0])
     # Add additional Y distance based on the selected bait multiplier
-    baitSelectWormY: int = (globalConfig.screenConfig[1] + baitSelectWorm[1])
+    baitSelectWormY: int = (globalConfig.screenConfig[1] + BAITSELECTWORM[1])
   moveMouseAbs(baitSelectWormX, baitSelectWormY)
   if num > 0:
-    moveMouseRel(0, ((num - 1) * baitSelectPixelDistance))
-    pressMouse(uinputTime)
+    moveMouseRel(0, ((num - 1) * BAITSELECTPIXELDISTANCE))
+    pressMouse(UINPUTTIME)
   else:
     # Not really smart but it should result in the best bait being selected
     for i in 1..7:
-      pressMouse(uinputTime)
-      moveMouseRel(0, baitSelectPixelDistance)
+      pressMouse(UINPUTTIME)
+      moveMouseRel(0, BAITSELECTPIXELDISTANCE)
 
 proc shopBaitMenu(): void =
+  debug("Doing bait shop menu...")
   var baitMenuAttempts: int = 1
   while not getBaitShop():
     baitMenuAttempts += 1
     if baitMenuAttempts > 20:
       error("Could not detect bait shop. Skipping...")
       return
-    sleep(animationMenuDelay)
+    sleep(ANIMATIONMENUDELAY)
   baitMenuAttempts = 0
   # Buy bait
   shopBait(globalConfig.bait)
   # Wait for shop to close
-  pressInteract(uinputTime)
+  pressInteract(UINPUTTIME)
   while getBaitShop():
     baitMenuAttempts += 1
     if baitMenuAttempts > 20:
       error("Bait shop not closing. Retrying...")
-      pressInteract(uinputTime)
-    sleep(animationMenuDelay)
-  sleep(animationMenuClose)
+      pressInteract(UINPUTTIME)
+    sleep(ANIMATIONMENUDELAY)
+  sleep(ANIMATIONMENUCLOSE)
 
 proc selectBaitMenu(): void =
+  debug("Doing bait select menu")
   var baitMenuAttempts: int = 1
   # Wait for select to open
   while not getBaitSelect():
@@ -152,19 +164,19 @@ proc selectBaitMenu(): void =
     if baitMenuAttempts > 20:
       error("Could not detect bait select. Skipping...")
       return
-    sleep(animationMenuDelay)
+    sleep(ANIMATIONMENUDELAY)
   baitMenuAttempts = 0
   # Select bait
   selectBait(globalConfig.bait)
   # Wait for select to close
-  pressBaitSelect(uinputTime)
+  pressBaitSelect(UINPUTTIME)
   while getBaitSelect():
     baitMenuAttempts += 1
     if baitMenuAttempts > 20:
       error("Bait select not closing. Retrying...")
-      pressInteract(uinputTime)
-    sleep(animationMenuDelay)
-  sleep(animationMenuClose)
+      pressInteract(UINPUTTIME)
+    sleep(ANIMATIONMENUDELAY)
+  sleep(ANIMATIONMENUCLOSE)
 
 proc doShop*(): void =
   info("Buying and selecting bait...")
@@ -172,12 +184,12 @@ proc doShop*(): void =
   # Select phone
   equipPhone()
   # Use phone
-  pressMouse(animationMenuDelay)
+  pressMouse(ANIMATIONMENUDELAY)
   # Buy bait
-  pressInteract(uinputTime)
+  pressInteract(UINPUTTIME)
   shopBaitMenu()
   # Select bait
-  pressBaitSelect(uinputTime)
+  pressBaitSelect(UINPUTTIME)
   selectBaitMenu()
   # Select rod
   equipRod()    

@@ -49,18 +49,23 @@ proc createDevice(): ptr libevdev_uinput =
   return uinput
 
 proc initDevice*(): void =
+  debug("Creating Webfisher input device...")
   webfisherDevice = createDevice()
+  debug("Attaching to display...")
   webfisherDisplay = XOpenDisplay(nil)
 
 proc cleanupDevice*(): void =
+  debug("Removing Webfisher input device...")
   libevdev_uinput_destroy(webfisherDevice)
+  debug("Detaching from display...")
   discard XCloseDisplay(webfisherDisplay)
 
 proc manageKey(key: int, state: int): void =
+  debug(fmt"Setting key {key} to state {state}...")
   libevdev_uinput_write_event(webfisherDevice, EV_KEY, key, state)
-  sleep(uinputTimeout) # Buffer time so listeners can see events more consistently
+  sleep(UINPUTTIMEOUT) # Buffer time so listeners can see events more consistently
   libevdev_uinput_write_event(webfisherDevice, EV_SYN, SYN_REPORT, 0)
-  sleep(uinputTimeout)
+  sleep(UINPUTTIMEOUT)
 
 proc pressKey(key: int): void =
   manageKey(key, 1)
@@ -86,10 +91,11 @@ proc pressNum*(num: int, time: int): void =
   releaseKey(num + 1)
 
 proc manageMouse(state: int): void =
+  debug(fmt"Setting mouse to state {state}...")
   libevdev_uinput_write_event(webfisherDevice, EV_KEY, BTN_LEFT, state)
-  sleep(uinputTimeout)
+  sleep(UINPUTTIMEOUT)
   libevdev_uinput_write_event(webfisherDevice, EV_SYN, SYN_REPORT, 0)
-  sleep(uinputTimeout)
+  sleep(UINPUTTIMEOUT)
 
 proc pressMouse*(): void =
   manageMouse(1)
@@ -103,6 +109,7 @@ proc pressMouse*(time: int): void =
   releaseMouse()
 
 proc moveMouseAbs*(x, y: int): void =
+  debug(fmt"Moving mouse (abs) to x {x} y {y}...")
   var
     # Most of this is unused since we use the root display so source doesn't apply
     # wSrc, wDest: Window # Unused
@@ -118,9 +125,10 @@ proc moveMouseAbs*(x, y: int): void =
     destX, destY)
 
   discard XFlush(webfisherDisplay)
-  sleep(uinputTimeout)
+  sleep(UINPUTTIMEOUT)
 
 proc moveMouseRel*(x, y: int): void =
+  debug(fmt"Moving mouse (rel) to x {x} y {y}...")
   var
     # Most of this is unused since we use the root display so source doesn't apply
     # wSrc, wDest: Window # Unused
@@ -136,5 +144,5 @@ proc moveMouseRel*(x, y: int): void =
     destX, destY)
 
   discard XFlush(webfisherDisplay)
-  sleep(uinputTimeout)
+  sleep(UINPUTTIMEOUT)
 

@@ -6,7 +6,8 @@ import
   ]
 
 import
-  constants
+  constants,
+  logging
 
 
 type
@@ -34,7 +35,7 @@ Options:
   quit(0)
 
 proc cliVersion(): void =
-  echo fmt"Webfisher {releaseVersion}"
+  notice(fmt"Webfisher {RELEASEVERSION}")
   quit(0)
 
 proc processCliArgs*(): CliArgs =
@@ -43,6 +44,7 @@ proc processCliArgs*(): CliArgs =
   cliArgs.timestamps = false
 
   for kind, key, val in getopt():
+    debug(fmt"Arg key {key} value {val}")
     case kind
       of cmdArgument:
         cliArgs.mode = key

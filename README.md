@@ -34,7 +34,7 @@ Features:
 - Clone the repo, cd to src
 - Run `nim c -r webfisher`
 - Edit the generated config file in your `~/.config/webfisher/config.json` (Linux), or `~\Appdata\Roaming\webfisher\config.json` (Windows).
-- If you run Webfisher from the CLI, you can also supply a config file with `-f <path to config.json>`.
+- If you run Webfisher from the CLI, you can also supply a config file with `-f="<path to config.json>"`.
   - Arguments can be found by tacking `-h` or `--help`
 
 Upon start, Webfisher will wait 5 seconds before attempting to do anything, so use this time to get Webfishing and your cursor situated.

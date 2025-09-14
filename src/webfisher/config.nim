@@ -219,13 +219,10 @@ proc initConfig*(): void =
 
   initLogger(cliArgs.loglevel, cliArgs.timestamps)
 
+  debug("Initializing configuration...")
   if cliArgs.file != "":
     configDir = cliArgs.file
     
   createConfig(configDir)
   updateConfig(configDir)
   globalConfig = parseConfig(configDir, cliArgs)
-
-proc getConfig*(): Config =
-  return globalConfig
-

@@ -1,4 +1,8 @@
-import std/os
+import
+  std / [
+    os,
+    strformat
+  ]
 
 import winim
 
@@ -16,12 +20,13 @@ proc cleanupDevice*(): void =
   return
 
 proc manageKey(key: int16, state: DWORD): void =
+  debug(fmt"Setting key {key} to state {state}...")
   var input: INPUT
   input.type = INPUT_KEYBOARD
   input.ki.wVk = key.WORD
   input.ki.dwFlags = state
   discard SendInput(1, addr input, sizeof(input).int32)
-  sleep(uinputTimeout)
+  sleep(UINPUTTIMEOUT)
 
 proc pressKey(key: int16): void =
   manageKey(key, 0)
@@ -46,11 +51,12 @@ proc pressNum*(num: int, time: int): void =
   releaseKey(numVk)
 
 proc manageMouse(state: DWORD): void =
+  debug(fmt"Setting mouse to state {state}...")
   var input: INPUT
   input.type = INPUT_MOUSE
   input.mi.dwFlags = state
   discard SendInput(1, addr input, sizeof(input).int32)
-  sleep(uinputTimeout)
+  sleep(UINPUTTIMEOUT)
 
 proc pressMouse*(): void =
   manageMouse(MOUSEEVENTF_LEFTDOWN)
@@ -64,20 +70,22 @@ proc pressMouse*(time: int): void =
   releaseMouse()
 
 proc moveMouseAbs*(x, y: int): void =
+  debug(fmt"Moving mouse (abs) to x {x} y {y}...")
   var input: INPUT
   input.type = INPUT_MOUSE
   input.mi.dx = ((x * 65535) div (globalConfig.screenConfig[2] - 1)).LONG
   input.mi.dy = ((y * 65535) div (globalConfig.screenConfig[3] - 1)).LONG
   input.mi.dwFlags = MOUSEEVENTF_MOVE or MOUSEEVENTF_ABSOLUTE
   discard SendInput(1, addr input, sizeof(INPUT).int32)
-  sleep(uinputTimeout)
+  sleep(UINPUTTIMEOUT)
 
 proc moveMouseRel*(x, y: int): void =
+  debug(fmt"Moving mouse (rel) to x {x} y {y}...")
   var input: INPUT
   input.type = INPUT_MOUSE
   input.mi.dx = x.LONG
   input.mi.dy = y.LONG
   input.mi.dwFlags = MOUSEEVENTF_MOVE
   discard SendInput(1, addr input, sizeof(INPUT).int32)
-  sleep(uinputTimeout)
+  sleep(UINPUTTIMEOUT)
 

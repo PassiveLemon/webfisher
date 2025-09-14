@@ -9,6 +9,7 @@ import
   webfisher / [
     config,
     input,
+    logging,
     screen,
     task
   ]
@@ -34,15 +35,16 @@ var globalState: GlobalState = GlobalState(
 
 
 block webfisher:
+  debug("Starting Webfisher...")
   initConfig()
   initDisplay()
   initDevice()
 
-  echo fmt"Started in {globalConfig.gameMode} mode."
+  notice(fmt"Started in {globalConfig.gameMode} mode.")
   if globalConfig.autoSoda:
-    echo "AutoSoda enabled."
+    info("AutoSoda enabled.")
   if globalConfig.autoShop:
-    echo fmt"AutoShop enabled, using bait {globalConfig.bait}."
+    info(fmt"AutoShop enabled, using bait {globalConfig.bait}.")
 
   # Add some wait time so the user can get situated
   sleep(5000)

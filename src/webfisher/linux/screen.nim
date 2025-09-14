@@ -1,11 +1,14 @@
 import
+  std/strformat,
   x11 / [
     x,
     xlib,
     xutil
   ]
 
-import ../constants
+import
+  ../constants,
+  ../logging
 
 from ../config import globalConfig
 
@@ -31,12 +34,15 @@ var webfisherDisplay: PDisplay
 #     f.write(image.data[i * 4 + 0])
 
 proc initDisplay*(): void =
+  debug("Attaching to display...")
   webfisherDisplay = XOpenDisplay(nil)
 
 proc cleanupDisplay*(): void =
+  debug("Detaching from display...")
   discard XCloseDisplay(webfisherDisplay)
 
 proc getScreenshot(): PXImage =
+  debug("Getting screenshot...")
   var screenshot = XGetImage(webfisherDisplay,
     RootWindow(webfisherDisplay, DefaultScreen(webfisherDisplay)),
     globalConfig.screenConfig[0].cint,
@@ -53,17 +59,20 @@ proc getPixelColor(screenshot: PXImage; x: int; y: int): Pixel =
   pixel.r = ((color shr 16) and 0xFF).int
   pixel.g = ((color shr 8) and 0xFF).int
   pixel.b = (color and 0xFF).int
+  debug(fmt"Pixel r {pixel.r} g {pixel.g} b {pixel.b}")
   return pixel
 
 proc checkPixels(screenshot: PXImage, pixelList: PixelList, count: int): bool =
   var valid = 0
   for checkPixel in pixelList:
     let pixel = getPixelColor(screenshot, checkPixel.x, checkPixel.y)
+    debug(fmt"checkPixel r {checkPixel.r} g {checkPixel.g} b {checkPixel.b}")
     if pixel.r == checkPixel.r and
         pixel.g == checkPixel.g and
         pixel.b == checkPixel.b:
       # We test if most of the pixels match since the reel could block the pixel
       valid += 1
+      debug(fmt"Pixel match, valid +1 {valid}")
   discard XDestroyImage(screenshot)
   if valid >= count:
     return true
@@ -71,22 +80,27 @@ proc checkPixels(screenshot: PXImage, pixelList: PixelList, count: int): bool =
     return false
 
 proc getFishingGame*(): bool =
+  debug("Checking for fishing game...")
   let screenshot = getScreenshot()
-  return checkPixels(screenshot, fishingReelPixels, 3)
+  return checkPixels(screenshot, FISHINGREELPIXELS, 3)
 
 proc getCatchMenu*(): bool =
+  debug("Checking for catch menu...")
   let screenshot = getScreenshot()
-  return checkPixels(screenshot, catchMenuPixels, 3)
+  return checkPixels(screenshot, CATCHMENUPIXELS, 3)
 
 proc getEmptyBait*(): bool =
+  debug("Checking for empty bait...")
   let screenshot = getScreenshot()
-  return checkPixels(screenshot, emptyBaitPixels, 2)
+  return checkPixels(screenshot, EMPTYBAITPIXELS, 2)
 
 proc getBaitShop*(): bool =
+  debug("Checking for bait shop...")
   let screenshot = getScreenshot()
-  return checkPixels(screenshot, baitShopPixels, 3)
+  return checkPixels(screenshot, BAITSHOPPIXELS, 3)
 
 proc getBaitSelect*(): bool =
+  debug("Checking for bait select...")
   let screenshot = getScreenshot()
-  return checkPixels(screenshot, baitSelectPixels, 3)
+  return checkPixels(screenshot, BAITSELECTPIXELS, 3)
 

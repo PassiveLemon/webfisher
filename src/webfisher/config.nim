@@ -207,6 +207,7 @@ proc parseConfig(filePath: string; cliArgs: CliArgs): Config =
 
   try:
     json = to(node, Config)
+    debug(pretty(node))
   except JsonParsingError:
     fatal("Config file is not valid json.")
     quit(1)

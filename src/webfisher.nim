@@ -30,15 +30,15 @@ var globalState: GlobalState = GlobalState(
   lastCatchTime: (epochTime() + 300.0),
   bucketTime: epochTime(),
   resetTime: epochTime(),
-  sodaTime: epochTime()
+  sodaTime: 0.0
 )
 
 
 block webfisher:
-  debug("Starting Webfisher...")
   initConfig()
   initDisplay()
   initDevice()
+  debug("Starting Webfisher...")
 
   notice(fmt"Started in {globalConfig.gameMode} mode.")
   if globalConfig.autoSoda:

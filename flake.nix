@@ -37,7 +37,7 @@
       };
       packages = {
         default = self'.packages.webfisher;
-        webfisher = pkgs.callPackage ./default.nix { };
+        webfisher = pkgs.callPackage ./package.nix { };
       };
     };
   };
